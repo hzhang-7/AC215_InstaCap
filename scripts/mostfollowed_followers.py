@@ -38,11 +38,10 @@ def most_followed(n = 10):
     # Skip header 
     for row in table.find_all("tr")[1:]:
         columns = row.find_all("td")
-        if len(columns) >= 2:
-            username = columns[0].text.strip()
-            # take out @
-            username = re.sub(r'@', '', username)
-            usernames.append(username)
+        username = columns[0].text.strip()
+        # take out @
+        username = re.sub(r'@', '', username)
+        usernames.append(username)
             
     top_n_usernames = usernames[:n]
     
