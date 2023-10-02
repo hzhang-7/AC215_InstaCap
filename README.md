@@ -1,7 +1,21 @@
-AC215-Template (Final Milestone)
-==============================
+# AC215 Project: InstaCap
 
-AC215 - Milestone2
+**Team Members**: \
+Isha Vaish (ishavaish@g.harvard.edu), Danhee Kim (sharonkim@g.harvard.edu), Annabel Yim (annabelyim@g.harvard.edu), Haoran Zhang (haoran_zhang@g.harvard.edu), Mike Binkowski (mbinkowski@college.harvard.edu)
+
+**Project**: \
+The goal of this project is to develop an application for Instagram caption generation. A user can upload a post they would like to caption along with a tone (e.g. quirky, funny, serious, happy, etc) for the caption.  
+  
+A brief outline of our project is given below (subject to change).
+1. Web-scrape Instagram posts and the corresponding captions from public accounts.
+2. Preprocess the scraped data into a ready-to-use data set for modeling containing the processed posts and captions. 
+3. Fine-tune the BLIP model on our dataset as a means of transfer learning. 
+4. Create the modeling pipeline: given user input of a photo and tone, use the fine-tuned BLIP model to predict the caption and then feed the BLIP caption and tone as an engineered prompt into GPT-3 to return the final generated caption.
+5. Create frontend and deploy the model.
+
+## Milestone 2
+
+The current structure of our repo is given below.
 
 Project Organization
 ------------
@@ -9,63 +23,51 @@ Project Organization
       ├── README.md
       ├── notebooks
       ├── references
-      ├── requirements.txt
-      ├── setup.py
       └── src
+            ├── persistant-folder
+            ├── secrets
             ├── preprocessing
-            │   ├── Dockerfile
-            │   ├── preprocess.py
-            │   └── requirements.txt
-            └── validation
-                  ├── Dockerfile
-                  ├── cv_val.py
-                  └── requirements.txt
-
-
+                ├── Dockerfile
+                ├── docker-shell.sh
+                ├── Pipfile
+                ├── Pipfile.lock
+                ├── Preprocess.py
+                └── test_bucket_access.py
+            
 --------
-# AC215 - Milestone2 - ButterFlyer
+Note: The `persistant-folder` and `secrets` are folders that are in the local directory (not pushed to GitHub). The `notebooks` folder contains code that is not part of any containers (e.g. EDA, reports, etc) and the `references` folder contains references.
 
-**Team Members**
-Pavlov Protovief, Paolo Primopadre and Pablo El Padron
+For each component of our project pipeline, we will have a seperate folder (under `src`) with a similar set-up as the `preprocessing` folder (i.e. set up for its own docker container and virtual environment). For Milestone 2, we have set up the structure for our first component in the pipeline: `preprocessing`. We will set up the remaining components as we go through the project. An outline of the proposed (subject to change) components is given below.
 
-**Group Name**
-Awesome Group
+- `preprocessing`: data collection (i.e. web scraping of instagram posts and captions) and data preprocessing (i.e. getting the data ready for modeling)
+- `blip`: fine-tuning the BLIP model
+- `caption-generation`: caption generation modeling pipeline (BLIP + GPT3)
+- `frontend`: frontend component
 
-**Project**
-In this project we aim to develop an application that can identify various species of butterflies in the wild using computer vision and offer educational content through a chatbot interface.
+A description of our `preprocessing` container is given below.
 
-### Milestone2 ###
+### Preprocessing
 
-We gathered dataset of 1M butterflies representing 17K species. Our dataset comes from following sources - (1),(2),(3) with approx 100GB in size. We parked our dataset in a private Google Cloud Bucket. 
+**Container Overview**:
+- Web-scrapes instagram posts and captions for different users
+- Preprocesses the scraped data into the desired format
+- Stores the processed data to GCP
+- Input to this container is source and destination is the GCS location
+- Output from this container stored at the GCS location
+- `secrets` folder is needed with the Google Application Credentials json stored inside
+- `persistent-folder` is a temporary folder used to verify access to the GCP bucket
 
-**Preprocess container**
-- This container reads 100GB of data and resizes the image sizes and stores it back to GCP
-- Input to this container is source and destincation GCS location, parameters for resizing, secrets needed - via docker
-- Output from this container stored at GCS location
+**Container Files**:
+1. `src/preprocessing/Dockerfile` - This dockerfile sets up a Docker container for a python application. It uses the official Debian-hosted Python 3.8 image as a base, defines the python environment variables, updates the package manager, upgrades installed packages, installs neccessary dependencies, creates non-root user named "app" for running the application, sets the working directory to "/app" and switches to the "app" user, creates the pipenv virtual environment with the neccessary packages installed, copies the application source code into the container, and activates the pipenv environment.
+2. `src/preprocessing/docker-shell.sh` - This shell file is used to build a docker container with the image name "web-scraper" using the dockerfile mentioned above. It sets the environment variables for GCP configuration and runs the docker container.
+3. `src/preprocessing/Pipfile` - This file describes the packages we would like to install in our virtual environment.
+4. `src/preprocessing/Pipfile.lock` - This is a file created by pipenv for dependency version locking and reproducibility. 
+5. `src/preprocessing/test_bucket_access.py` - This is a sample python script for testing access to the GCP bucket. If it works, running `python test_bucket_access.py` should upload a  `test_bucket_access.txt` file into the `persistent-folder` stored locally. To run this script, use the command `python test_bucket_access.py`.
+6. `preprocess.py` - This is the base script for data preprocessing that we will build upon in future milestones. Currently, it pulls an image stored from the GCP bucket, center crops it, and resizes it to 256 $\times$ 256 pixels, then re-uploads it to the GCP bucket. We will expand on the functionality of this script, so that it preprocesses all of our scraped data and uploads it to the GCP bucket. To run this script, use the command `python preprocess.py`. 
 
-(1) `src/preprocessing/preprocess.py`  - Here we do preprocessing on our dataset of 100GB, we reduce the image sizes (a parameter that can be changed later) to 128x128 for faster iteration with our process. Now we have dataset at 10GB and saved on GCS. 
+Note, we will be adding a `scraper.py` file which will be responsible for actually scraping the instagram posts and captions that will be preprocessed and stored using the `preprocess.py` script.
 
-(2) `src/preprocessing/requirements.txt` - We used following packages to help us preprocess here - `special butterfly package` 
-
-(3) `src/preprocessing/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
-
-To run Dockerfile - `Instructions here`
-
-**Cross validation, Data Versioning**
-- This container reads preprocessed dataset and creates validation split and uses dvc for versioning.
-- Input to this container is source GCS location, parameters if any, secrets needed - via docker
-- Output is flat file with cross validation splits
-  
-(1) `src/validation/cv_val.py` - Since our dataset is quite large we decided to stratify based on species and kept 80% for training and 20% for validation. Our metrics will be monitored on this 20% validation set. 
-
-(2) `requirements.txt` - We used following packages to help us with cross validation here - `iterative-stratification` 
-
-(3) `src/validation/Dockerfile` - This dockerfile starts with  `python:3.8-slim-buster`. This <statement> attaches volume to the docker container and also uses secrets (not to be stored on GitHub) to connect to GCS.
-
-To run Dockerfile - `Instructions here`
-
-**Notebooks** 
-This folder contains code that is not part of container - for e.g: EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations. 
-
-----
-You may adjust this template as appropriate for your project.
+**How to run the Docker Container**:
+1. Clone this repo
+2. `cd` into `src/preprocessing`
+3. Run `sh docker-shell.sh`
