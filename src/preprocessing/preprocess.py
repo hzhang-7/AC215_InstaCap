@@ -3,6 +3,9 @@
 from google.cloud import storage
 from PIL import Image
 import io
+import requests
+import instaloader
+import os
 
 def initialize_storage_client():
     '''
@@ -10,7 +13,7 @@ def initialize_storage_client():
     '''
     return storage.Client()
 
-def download_and_preprocess_image(bucket_name, blob_name, target_size=(256, 256)):
+def download_and_preprocess_image(bucket_name, blob_name, image_bytes, target_size=(256, 256)):
     '''
     download and preprocess an image by doing a central crop to make an image 256x256 pixels
     '''
@@ -22,7 +25,7 @@ def download_and_preprocess_image(bucket_name, blob_name, target_size=(256, 256)
         blob = bucket.blob(blob_name)
 
         # download image as bytes and get via pillow
-        image_bytes = blob.download_as_bytes()
+        #image_bytes = blob.download_as_bytes()
         image = Image.open(io.BytesIO(image_bytes))
 
         width, height = image.size
@@ -53,7 +56,7 @@ def download_and_preprocess_image(bucket_name, blob_name, target_size=(256, 256)
         print(f"Error downloading and preprocessing image: {e}")
         return None
     
-def upload_image_to_blob(bucket_name, blob_name, image_bytes):
+def upload_image_to_blob(bucket_name, blob_name, image_bytes, caption):
     '''
     upload image to a blob
     '''
@@ -64,21 +67,95 @@ def upload_image_to_blob(bucket_name, blob_name, image_bytes):
         blob = bucket.blob(blob_name)
 
         # upload image from bytes
-        blob.upload_from_string(image_bytes, content_type='image/jpeg')  # adjust content_type as needed
+        blob.upload_from_string(image_bytes, content_type='image/jpeg') 
+
+        blob = bucket.blob(f'{blob_name}_caption') # adjust content_type as needed
+        blob.upload_from_string(caption, content_type='text/plain')
 
         print(f"Image '{blob_name}' uploaded to '{bucket_name}'")
 
     except Exception as e:
         print(f"Error uploading image: {e}")
 
+def get_post_data_from_profiles(profile_list = ["mbinkowski56"]):
+    
+    """Gets the data for every post
+
+    Args:
+        profile_list (list, optional): _description_. Defaults to ["mbinkowski56"].
+
+    Returns:
+        processed_posts: a list of dictionaries containing the owner_username, mediaid, caption, post url, and photo
+    """
+    L = instaloader.Instaloader()
+
+    # List of posts and post data
+    processed_posts = []
+    print(type(profile_list[0]))
+    
+    # Iterate through profiles in profile_list
+    for profile_name in profile_list:
+
+        # Get profile information
+        profile = instaloader.Profile.from_username(L.context, profile_name)
+        
+        if not profile.is_private:
+            # Iterate though the first 100 posts of a profile
+            i = 0
+            for post in profile.get_posts():
+
+                # Check if post url is good
+                response = requests.get(post.url)
+                if response.status_code == 200:
+                    
+                    # Get the image data as bytes
+                    image_data = response.content
+                    
+                    # Create and add dictionary of post data
+                    processed_posts.append({
+                        'owner_username': post.owner_username,
+                        'mediaid': post.mediaid,
+                        'caption': post.caption,
+                        'url': post.url,
+                        'photo': image_data,
+                    })
+                    i+=1
+                    if(i>10):
+                        break
+                else:  
+                    print('Failed to retrieve the image data.')
+        #else:
+            #print('PRIVATE PROFILE')        
+        # Return post data
+    return processed_posts
+
 if __name__ == "__main__":
+    
+    file_contents = []
+
+    # Loop through each file in the directory
+    for filename in os.listdir(os.getcwd()):
+        # Check if the file is a text file (you can adjust this condition if needed)
+        if filename.endswith('.txt'):
+            # Construct the full file path
+            file_path = os.path.join(os.getcwd(), filename)
+            # Open the file and read its contents
+            with open(file_path, 'r') as file:
+                # Read the contents of the file and append them to the list
+                file_contents.append(file.read().splitlines())
+
+    posts = get_post_data_from_profiles()
+
     bucket_name = 'instacap-data'
 
-    # testing on one of mike's ig posts for now
-    blob_name = 'posts/2016-10-29_13-06-27_UTC.jpg'
+    for post in posts:
+        # testing on one of mike's ig posts for now
+        blob_name = f'{post["owner_username"]}_{post["mediaid"]}'
+        print(f'BLOOOB: {blob_name}')
 
-    preprocessed_image = download_and_preprocess_image(bucket_name, blob_name)
 
-    if preprocessed_image:
-        upload_image_to_blob(bucket_name, blob_name, preprocessed_image)
-        print('uploaded test!')
+        preprocessed_image = download_and_preprocess_image(bucket_name, blob_name, post['photo'])
+
+        if preprocessed_image:
+            upload_image_to_blob(bucket_name, blob_name, preprocessed_image, post['caption'])
+            print('uploaded test!')
