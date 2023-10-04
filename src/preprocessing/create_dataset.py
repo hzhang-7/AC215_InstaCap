@@ -56,6 +56,7 @@ if __name__ == "__main__":
     image_caption_mapping = get_image_caption_mapping(client, bucket_name, posts_folder, captions_folder)
     dataset = pd.DataFrame.from_dict(image_caption_mapping, orient='index', columns=['caption'])
     dataset.index.name = 'image_file_name'
-    
+    dataset.reset_index(inplace=True)
+    print(dataset.head())
     path_name = 'sample_dataset.csv'
     upload_dataframe_to_gcs(client, bucket_name, dataset, path_name)
