@@ -69,3 +69,56 @@ A description of our `preprocessing` container is given below.
 1. Clone this repo
 2. `cd` into `src/preprocessing`
 3. Run `sh docker-shell.sh`
+
+
+### Data Versioning
+
+**Container Overview**:
+- Works under the private repository dedicated for data versioning
+- Downloads data locally to update data versions through `dvc`
+
+**Container Files**:
+1. `src/data-versioning/Dockerfile` - This dockerfile sets up a Docker container for data versioning. It uses the official Debian-hosted Python 3.8 image as a base, defines the python environment variables, properly updates and upgrades package-related components in the system, creates non-root user named "app" for running the application, sets the working directory to "/app" and switches to the "app" user, creates the pipenv virtual environment with the neccessary packages installed, copies the application source code into the container, and activates the pipenv environment.
+2. `src/data-versioning/Pipfile` - This file describes the packages we would like to install in our virtual environment, specifically `dvc` package.
+3. `src/data-versioning/Pipfile.lock` - This is a file created by pipenv for dependency version locking and reproducibility. 
+4. `src/data-versioning/prep.sh` - This file sets up the git directory by pulling from our private repository for data versioning
+5. `src/data-versioning/docker-shell.sh` - This shell file is used to build a docker container with the image name "ac215-data-versioning" using the dockerfile mentioned above. It sets the environment variables for GCP configuration and runs the docker container. The container is named as "ac215-data-versioning-container"
+6. `src/data-versioning/download_data.py` - This python script downloads data from the GCS bucket and stores locally in the `./data` directory by default. For now, only captions data and posts data will be downloaded, and they are stored in the same structure as on the GCS bucket.
+
+**How to run the Docker Container**
+1. Clone this repo `AC215_InstaCap`
+2. Copy the directory `src/data-versioning` and your secrets directory `secrets` to some directory `<your-directory>` outside this git repo (in order to avoid the conflicts between main project repo and data versioning repo)
+
+After this step, you should have your local directory structured as follows:
+------------
+<your-directory>
+      ├── data-versioning
+      │     ├── Dockerfile
+      │     ├── Pipfile
+      │     ├── Pipfile.lock
+      │     ├── prep.sh
+      │     ├── docker-shell.sh
+      │     └── download_data.py
+      └── secrets
+------------
+
+3. `cd` into `data-versioning` directory
+4. Run `sh prep.sh`. This will set up the git repository for you by pulling the remote. If you have issues with permissions on accessing the data versioning repo, please contact us!
+5. Run `sh docker-shell.sh`. This should build all necessary docker images and run the container properly.
+6. **Inside the container**, run `python download_data.py` at directory `/app/` (you should be here by default). This should create `data` directory and proper subdirectories, and downloaded data can be found there.
+
+If you have properly pulled the git repository in step 4, you should already have the basic configs for `dvc` in your current directory. Hence, `dvc init` and `dvc remote add` are not required.
+
+7. Run `dvc add data`. This assumes all the updated data is in `./data/` directory.
+8. Run `dvc push` to push versioned data onto GCS bucket
+
+To push the records onto data versioning github repo, please **exit from the container** before you move to the following steps.
+
+The typical commands for data versioning are the following. Please change the dataset version numbers accordingly.
+```
+git status
+git add .
+git commit -m 'Dataset updates version v1.0'
+git tag -a 'dataset_v1.0' -m 'tag dataset'
+git push --atomic origin main dataset_v1.0
+```
