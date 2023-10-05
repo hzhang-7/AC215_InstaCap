@@ -6,6 +6,57 @@ from instagrapi import Client
 from instagrapi.types import Usertag
 from secrets import config 
 
+def get_influencers():
+
+    """Gets a list of influencers from different categories (from hubspot link)
+
+    Args
+    ----------
+
+    Returns
+    -------
+    top_n_usernames: list
+        a list containing the usernames of the influencers from different categories 
+    """
+    
+    # list of usernames 
+    influencers = []
+
+    # url of influencers by category 
+    url = "https://blog.hubspot.com/marketing/instagram-influencers#food"
+
+    # HTTP get request to url
+    response = requests.get(url)
+
+    # check for successful request 
+    if response.status_code == 200:
+
+        # Parse HTML content from webpage 
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # tag for category of influencers 
+        ol_elements = soup.find_all('ol')
+
+        for ol_element in ol_elements:
+            # Find all <a> elements within each <ol> element
+            a_elements = ol_element.find_all('a')
+            for a in a_elements:
+                href = a.get('href')
+                if href:
+                    # extract username from instagram url 
+                    match = re.search(r'https://www.instagram.com/([^/]+)/?', href)
+                    if match:
+                        username = match.group(1)
+                        influencers.append(username)
+
+        return influencers 
+    
+    else:
+        print("Failed to retrieve webpage. Status code:", response.status_code)
+        return None
+
+
+
 def most_followed_username(n = 10):
     
     """Gets the most followed instagram username accounts 
@@ -86,5 +137,3 @@ def get_usernames(username, n=0):
     follower_usernames = [followers[k].username for k in followers.keys()]
 
     return follower_usernames
-
-
