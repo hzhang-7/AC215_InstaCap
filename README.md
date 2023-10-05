@@ -114,7 +114,7 @@ If you have properly pulled the git repository in step 4, you should already hav
 
 To push the records onto data versioning github repo, please **exit from the container** before you move to the following steps.
 
-The typical commands for data versioning are the following. Please change the dataset version numbers accordingly.
+The typical `git` commands for data versioning are the following. Please change the dataset version numbers accordingly.
 ```
 git status
 git add .
