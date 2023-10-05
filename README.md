@@ -90,7 +90,7 @@ A description of our `preprocessing` container is given below.
 2. Copy the directory `src/data-versioning` and your secrets directory `secrets` to some directory `<your-directory>` outside this git repo (in order to avoid the conflicts between main project repo and data versioning repo)
 
 After this step, you should have your local directory structured as follows:
-------------
+```
 <your-directory>
       ├── data-versioning
       │     ├── Dockerfile
@@ -100,7 +100,7 @@ After this step, you should have your local directory structured as follows:
       │     ├── docker-shell.sh
       │     └── download_data.py
       └── secrets
-------------
+```
 
 3. `cd` into `data-versioning` directory
 4. Run `sh prep.sh`. This will set up the git repository for you by pulling the remote. If you have issues with permissions on accessing the data versioning repo, please contact us!
