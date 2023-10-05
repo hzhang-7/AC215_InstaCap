@@ -1,27 +1,53 @@
 # AC215 Project: InstaCap
 
-**Team Members**: \
-Isha Vaish (ishavaish@g.harvard.edu), Danhee Kim (sharonkim@g.harvard.edu), Annabel Yim (annabelyim@g.harvard.edu), Haoran Zhang (haoran_zhang@g.harvard.edu), Mike Binkowski (mbinkowski@college.harvard.edu)
+## Team Members
+- Isha Vaish (ishavaish@g.harvard.edu)
+- Danhee Kim (sharonkim@g.harvard.edu)
+- Annabel Yim (annabelyim@g.harvard.edu)
+- Haoran Zhang (haoran_zhang@g.harvard.edu)
+- Mike Binkowski (mbinkowski@college.harvard.edu)
 
-**Project**: \
+## Project
 The goal of this project is to develop an application for Instagram caption generation. A user can upload a post they would like to caption along with a tone (e.g. quirky, funny, serious, happy, etc) for the caption.  
   
-A brief outline of our project is given below (subject to change).
-1. Web-scrape Instagram posts and the corresponding captions from public accounts.
-2. Preprocess the scraped data into a ready-to-use data set for modeling containing the processed posts and captions. 
-3. Fine-tune the BLIP model on our dataset as a means of transfer learning. 
-4. Create the modeling pipeline: given user input of a photo and tone, use the fine-tuned BLIP model to predict the caption and then feed the BLIP caption and tone as an engineered prompt into GPT-3 to return the final generated caption.
-5. Create frontend and deploy the model.
+A brief outline of our project is given below (subject to change)
+1. Use BLIP model to generate transcriptions of a user uploaded image
+2. Prompt engineer LLAMA to create Instagram captions based off the BLIP transcriptions and user specified tone
+3. Create frontend and deploy the models
 
-## Milestone 2
+### MILESTONE 3 SUBMISSION NOTE
+Our original plan was to finetune BLIP with webscraped Instagram posts and captions. However, we believe that this approach is unncessary given the nature of how Instagram captions often do not directly describe what happens in an Instagram post (the data we scraped seem to have support this assumption of unrelated captions with images).
+
+We decided to try a different approach in the milestone where we built a model from scratch utilizing RESNET (to extract image features) and BERT embeddings of BLIP transcriptions (to enrich our data/context/input). These two input layers along with the input sequences of the true captions (first $n$ words of the caption) are then added and passed into an LSTM layer in order to predict the $n+1$th word of a caption. During time of inference, the model will generate captions in a loop predicting the next word while passing in the previous generated sequence as an input, the predicted image features from RESNET, and BERT embeddings of predicted BLIP transcriptions.
+
+Below is our baseline model summary:
+![model](references/model_summary.png)
+
+Our initial experimentation of this model is poor due to a small and low quality dataset.
+
+In order to generate higher quality captions, we are deciding to shift the scope of our project: we will utilize BLIP and prompt engineer LLAMA for Instagram caption generations. In future milestones, we will be focusing on hosting BLIP and LLAMA as well as creating a user friendly UI for this application.
+
+This milestone contains our efforts in the following:
+- Finetuning BLIP attempts
+- Complete scripts for scraping Instagram posts/captions that upload into GCS
+- Creating the model from scratch
+- Attempts for serverless training with Vertex AI
+- DVC implementation
+
+Additionally, our quota request for GPU access has not been approved. The following materials submitted in our milestone are for CPU jobs. Currently, our custom job submissions are failing. We have and are still debugging these issues.
+
+
+# Milestone 3
 
 The current structure of our repo is given below.
 
-Project Organization
+## Project Organization
 ------------
       ├── LICENSE
       ├── README.md
       ├── notebooks
+          ├── baseline_modeling.ipynb
+          ├── blip_finetune.ipynb
       ├── references
       └── src
             ├── persistant-folder
@@ -31,24 +57,37 @@ Project Organization
                 ├── docker-shell.sh
                 ├── Pipfile
                 ├── Pipfile.lock
-                ├── Preprocess.py
+                ├── preprocess.py
                 ├── test_bucket_access.py
                 ├── get_usernames.py
                 ├── get_data.py
                 └── create_dataset.py
+            ├── data-versioning
+                ├── Dockerfile
+                ├── docker-shell.sh
+                ├── download_data.py
+                ├── Pipfile
+                ├── Pipfile.lock
+                ├── prep.sh
+            ├── model-training
+                ├── package
+                    ├── trainer
+                        ├── task.py
+                    ├── setup.py
+                ├── Dockerfile
+                ├── docker-shell.sh
+                ├── docker-entrypoint.sh
+                ├── package-trainer.sh
+                ├── cli.sh
+                ├── cli-multi-gpu.sh
+                ├── Pipfile
+                ├── Pipfile.lock
+
              
             
 --------
-Note: The `persistant-folder` and `secrets` are folders that are in the local directory (not pushed to GitHub). The `notebooks` folder contains code that is not part of any containers (e.g. EDA, reports, etc) and the `references` folder contains references.
+Note: The `persistant-folder` and `secrets` are folders that are in the local directory (not pushed to GitHub). The `notebooks` folder contains code that is not part of any containers (e.g. EDA, reports, etc) and the `references` folder contains references. Currently, we have two `.ipynb` notebooks in our `notebooks` folder related to initial modeling experimentation (finetuning BLIP, creating/training our custom model).
 
-For each component of our project pipeline, we will have a seperate folder (under `src`) with a similar set-up as the `preprocessing` folder (i.e. set up for its own docker container and virtual environment). For Milestone 2, we have set up the structure for our first component in the pipeline: `preprocessing`. We will set up the remaining components as we go through the project. An outline of the proposed (subject to change) components is given below.
-
-- `preprocessing`: data collection (i.e. web scraping of instagram posts and captions) and data preprocessing (i.e. getting the data ready for modeling)
-- `blip`: fine-tuning the BLIP model
-- `caption-generation`: caption generation modeling pipeline (BLIP + GPT3)
-- `frontend`: frontend component
-
-A description of our `preprocessing` container is given below.
 
 ### Preprocessing
 
@@ -132,3 +171,38 @@ git commit -m 'Dataset updates version v1.0'
 git tag -a 'dataset_v1.0' -m 'tag dataset'
 git push --atomic origin main dataset_v1.0
 ```
+
+### Model Training
+**Container Overview**:
+- Reads and formats our data from GCS
+- Trains our baseline model with Weights & Biases integration
+- Packages our train script to submit as a serverless training job in Vertex AI
+
+**Container Files**:
+1. `src/model-training/Dockerfile` - This dockerfile sets up a Docker container for model training. It uses the official Debian-hosted Python 3.8 image as a base, defines the python environment variables, properly updates and upgrades package-related components in the system, creates non-root user named "app" for running the application, sets the working directory to "/app" and switches to the "app" user, creates the pipenv virtual environment with the neccessary packages installed, copies the application source code into the container, and activates the pipenv environment.
+2. `src/model-training/Pipfile` - This file describes the packages we would like to install in our virtual environment.
+3. `src/model-training/Pipfile.lock` - This is a file created by pipenv for dependency version locking and reproducibility. 
+4. `src/model-training/docker-shell.sh` - This shell file is used to build a docker container with the image name "model-training-cli" using the dockerfile mentioned above. It sets the environment variables for GCP configuration and runs the docker container.
+5. `src/model-training/docker-entrypoint.sh` - This shell script establishes our Docker entry point and ensures that the Google credentials are properly pointed to our project.
+6. `src/model-training/cli.sh` - This shell script creates a job in Vertex AI for training our baseline model using different container images, specifying various parameters like machine type, replica count, and other training options, and then runs the job with a CPU-based container image.
+7. `src/model-training/cli-multi-gpu.sh` - This shell script creates a multi-GPU training job in Vertex AI using a specified TensorFlow GPU container image, setting various parameters such as machine type, accelerator type and count, and other training options, and then runs the job with these configurations.
+8. `src/model-training/package-trainer.sh` - This shell script packages all the training code into a `trainer.tar.gz` file, compresses it, and uploads it to our desired GCS bucket with the name `instacap-trainer.tar.gz`.
+9. `src/model-training/package/setup.py` - This Python script defines a package configuration for an "instacap-trainer" application, specifying required dependencies, version, and package information for the application.
+10. `src/model-training/package/trainer/task.py` - This Python script contains all of the code needed to setup our training and test data for our baseline model ingestion. The script also contains the necessary code for our baseline model training. This code is packaged into the `trainer.tar.gz` file.
+
+**How to run the Docker container and submit a job to Vertex AI from `task.py`**:
+1. Clone this repo
+2. `cd` into `src/model-training`
+3. Run `sh docker-shell.sh`
+4. Run `sh package-trainer.sh`
+5. Run `sh cli.sh`
+
+
+## Initial Experiment Tracking for our Baseline Model
+Below contains a screenshot of the output from our Weights & Biases page from training in our `baseline_model.ipynb` notebook. We used `wandb` in order to track different iterations of our model training with the `wandb` library. Weights & biases is currently implemented in our `src/model-training/package/trainer/task.py` script.
+
+![wnb image](references/wandb_outputs.png)
+
+## Vertex AI Custom Jobs
+After running the shell scripts to submit a Vertex AI job, we can create serverless jobs with GCP. Below is a screenshot of our many failed jobs that we are still in the process of debugging (thank you, Shivas, for helping!).
+![serverless](references/vertex_ai_jobs.png)
