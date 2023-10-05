@@ -63,9 +63,7 @@ A description of our `preprocessing` container is given below.
 3. `src/preprocessing/Pipfile` - This file describes the packages we would like to install in our virtual environment.
 4. `src/preprocessing/Pipfile.lock` - This is a file created by pipenv for dependency version locking and reproducibility. 
 5. `src/preprocessing/test_bucket_access.py` - This is a sample python script for testing access to the GCP bucket. If it works, running `python test_bucket_access.py` should upload a  `test_bucket_access.txt` file into the `persistent-folder` stored locally. To run this script, use the command `python test_bucket_access.py`.
-6. `preprocess.py` - This is the base script for data preprocessing that we will build upon in future milestones. Currently, it pulls an image stored from the GCP bucket, center crops it, and resizes it to 256 $\times$ 256 pixels, then re-uploads it to the GCP bucket. We will expand on the functionality of this script, so that it preprocesses all of our scraped data and uploads it to the GCP bucket. To run this script, use the command `python preprocess.py`. 
-
-Note, we will be adding a `scraper.py` file which will be responsible for actually scraping the instagram posts and captions that will be preprocessed and stored using the `preprocess.py` script.
+6. `preprocess.py` - This is the base script for data preprocessing that we will build upon in future milestones. Currently, it pulls an image from the posts of the accounts we have found, center crops it, and resizes it to 256 $\times$ 256 pixels, then uploads it to the GCP bucket along with the post's caption. To run this script, use the command `python preprocess.py`. 
 
 **How to run the Docker Container**:
 1. Clone this repo

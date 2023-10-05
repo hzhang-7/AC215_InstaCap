@@ -7,6 +7,19 @@ import requests
 import instaloader
 import os
 
+def get_profile_list(files):
+    profiles = []
+    for file in files:
+        try:
+            with open(file, 'r') as file:
+                profiles.extend([line.strip() for line in file.readlines()])
+        except FileNotFoundError:
+            print(f"The file '{file}' was not found.")
+        except Exception as e:
+            print(f"An error occurred while processing '{file}': {str(e)}")
+    return profiles
+
+
 def initialize_storage_client():
     '''
     initialize google cloud storage client
@@ -64,12 +77,12 @@ def upload_image_to_blob(bucket_name, blob_name, image_bytes, caption):
         client = initialize_storage_client()
 
         bucket = client.get_bucket(bucket_name)
-        blob = bucket.blob(blob_name)
+        blob = bucket.blob(f'posts/{blob_name}')
 
         # upload image from bytes
         blob.upload_from_string(image_bytes, content_type='image/jpeg') 
 
-        blob = bucket.blob(f'{blob_name}_caption') # adjust content_type as needed
+        blob = bucket.blob(f'captions/{blob_name}') # adjust content_type as needed
         blob.upload_from_string(caption, content_type='text/plain')
 
         print(f"Image '{blob_name}' uploaded to '{bucket_name}'")
@@ -94,12 +107,13 @@ def get_post_data_from_profiles(profile_list = ["mbinkowski56"]):
     print(type(profile_list[0]))
     
     # Iterate through profiles in profile_list
-    for profile_name in profile_list:
-
+    for profile_name in profile_list[:180]:
+        
         # Get profile information
         profile = instaloader.Profile.from_username(L.context, profile_name)
         
         if not profile.is_private:
+            print(profile_name)
             # Iterate though the first 100 posts of a profile
             i = 0
             for post in profile.get_posts():
@@ -130,21 +144,10 @@ def get_post_data_from_profiles(profile_list = ["mbinkowski56"]):
     return processed_posts
 
 if __name__ == "__main__":
-    
-    file_contents = []
 
-    # Loop through each file in the directory
-    for filename in os.listdir(os.getcwd()):
-        # Check if the file is a text file (you can adjust this condition if needed)
-        if filename.endswith('.txt'):
-            # Construct the full file path
-            file_path = os.path.join(os.getcwd(), filename)
-            # Open the file and read its contents
-            with open(file_path, 'r') as file:
-                # Read the contents of the file and append them to the list
-                file_contents.append(file.read().splitlines())
-
-    posts = get_post_data_from_profiles()
+    profiles = get_profile_list(['usernames_0.txt', 'usernames_1.txt', 'usernames_2.txt'])
+    print("got profiles")
+    posts = get_post_data_from_profiles(profiles)
 
     bucket_name = 'instacap-data'
 
