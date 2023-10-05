@@ -12,10 +12,10 @@ export GCP_ZONE="us-central1-a"
 docker network inspect data-versioning-network >/dev/null 2>&1 || docker network create data-versioning-network
 
 # Build the image based on the Dockerfile
-docker build -t milestone3-test -f Dockerfile .
+docker build -t ac215-data-versioning -f Dockerfile .
 
 # Run Container
-docker run --rm --name milestone3-test-container -ti \
+docker run --rm --name ac215-data-versioning-container -ti \
 -v "$BASE_DIR":/app \
 -v "$SECRETS_DIR":/secrets \
 -v ~/.gitconfig:/etc/gitconfig \
@@ -24,4 +24,4 @@ docker run --rm --name milestone3-test-container -ti \
 -e GCP_ZONE=$GCP_ZONE \
 -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
 --network data-versioning-network \
-milestone3-test
+ac215-data-versioning
