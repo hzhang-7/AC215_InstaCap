@@ -2,11 +2,11 @@
 
 echo "Container is running!!!"
 
-# Authenticate gcloud using service account
-gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
+
 # Set GCP Project Details
 gcloud config set project $GCP_PROJECT
-
+# Authenticate gcloud using service account
+gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS
 
 #/bin/bash
 pipenv shell

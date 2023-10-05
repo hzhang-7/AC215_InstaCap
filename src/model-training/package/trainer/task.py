@@ -1,11 +1,11 @@
-# modeling notebook --> script for job setup, all training code for our instacap model should be here 
+# # modeling notebook --> script for job setup, all training code for our instacap model should be here 
 import argparse
 import os
 import requests
 import zipfile
 import tarfile
 import time
-from google.colab import auth
+# from google.colab import auth
 from google.cloud import storage
 import io
 import numpy as np
@@ -27,7 +27,7 @@ from transformers import BlipProcessor, BlipForConditionalGeneration
 import torch
 import requests
 from PIL import Image
-from datasets import Dataset, load_dataset
+# from datasets import Dataset, load_dataset
 import time
 
 # W&B
@@ -74,26 +74,26 @@ print("GPU Available: ", tf.config.list_physical_devices("GPU"))
 print("All Physical Devices", tf.config.list_physical_devices())
 
 
-# Utils functions
-def download_file(packet_url, base_path="", extract=False, headers=None):
-    if base_path != "":
-        if not os.path.exists(base_path):
-            os.mkdir(base_path)
-    packet_file = os.path.basename(packet_url)
-    with requests.get(packet_url, stream=True, headers=headers) as r:
-        r.raise_for_status()
-        with open(os.path.join(base_path, packet_file), "wb") as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
+# # Utils functions
+# def download_file(packet_url, base_path="", extract=False, headers=None):
+#     if base_path != "":
+#         if not os.path.exists(base_path):
+#             os.mkdir(base_path)
+#     packet_file = os.path.basename(packet_url)
+#     with requests.get(packet_url, stream=True, headers=headers) as r:
+#         r.raise_for_status()
+#         with open(os.path.join(base_path, packet_file), "wb") as f:
+#             for chunk in r.iter_content(chunk_size=8192):
+#                 f.write(chunk)
 
-    if extract:
-        if packet_file.endswith(".zip"):
-            with zipfile.ZipFile(os.path.join(base_path, packet_file)) as zfile:
-                zfile.extractall(base_path)
-        else:
-            packet_name = packet_file.split(".")[0]
-            with tarfile.open(os.path.join(base_path, packet_file)) as tfile:
-                tfile.extractall(base_path)
+#     if extract:
+#         if packet_file.endswith(".zip"):
+#             with zipfile.ZipFile(os.path.join(base_path, packet_file)) as zfile:
+#                 zfile.extractall(base_path)
+#         else:
+#             packet_name = packet_file.split(".")[0]
+#             with tarfile.open(os.path.join(base_path, packet_file)) as tfile:
+#                 tfile.extractall(base_path)
 
 
 
@@ -312,7 +312,7 @@ model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy'])
 
 # Initialize a W&B run
 wandb.init(
-    project = 'instacap-demo',
+    project = 'instacap-vertex-ai',
     config = {
       "learning_rate": learning_rate,
       "epochs": epochs,
