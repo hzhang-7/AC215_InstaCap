@@ -76,9 +76,13 @@ def get_usernames(username, n=0):
     cl = Client()
     cl.login(ig_username, ig_password, ig_2fa)
 
+    # get user_id that API uses to uniquely identify associated input username 
     user_id = cl.user_id_from_username(username)
+
+    # get followers of the input username 
     followers = cl.user_followers(user_id, n)
 
+    # store usernames of the followers in list 
     follower_usernames = [followers[k].username for k in followers.keys()]
 
     return follower_usernames
