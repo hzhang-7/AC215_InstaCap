@@ -193,9 +193,10 @@ git push --atomic origin main dataset_v1.0
 **How to run the Docker container and submit a job to Vertex AI from `task.py`**:
 1. Clone this repo
 2. `cd` into `src/model-training`
-3. Run `sh docker-shell.sh`
-4. Run `sh package-trainer.sh`
-5. Run `sh cli.sh`
+3. Set an environment variable `export WANDB_KEY=...` with your WandB API Key
+4. Run `sh docker-shell.sh`
+5. Run `sh package-trainer.sh`
+6. Run `sh cli.sh`
 
 
 ## Initial Experiment Tracking for our Baseline Model
