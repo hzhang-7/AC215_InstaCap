@@ -34,7 +34,7 @@ This milestone contains our efforts in the following:
 - Attempts for serverless training with Vertex AI
 - DVC implementation
 
-Additionally, our quota request for GPU access has not been approved. The following materials submitted in our milestone are for CPU jobs. Currently, our custom job submissions are failing. We have and are still debugging these issues.
+Additionally, our quota request for GPU access has not been approved. The following materials submitted in our milestone are for CPU jobs. We have been able to successfully create serverless jobs with CPU and WandB integration.
 
 
 # Milestone 3
@@ -72,6 +72,7 @@ The current structure of our repo is given below.
             ├── model-training
                 ├── package
                     ├── trainer
+                        ├── __init__.py
                         ├── task.py
                     ├── setup.py
                 ├── Dockerfile
@@ -200,10 +201,10 @@ git push --atomic origin main dataset_v1.0
 
 
 ## Initial Experiment Tracking for our Baseline Model
-Below contains a screenshot of the output from our Weights & Biases page from training in our `baseline_model.ipynb` notebook. We used `wandb` in order to track different iterations of our model training with the `wandb` library. Weights & biases is currently implemented in our `src/model-training/package/trainer/task.py` script.
+Below contains a screenshot of the output from our Weights & Biases page from serverless training. We used `wandb` in order to track different iterations of our model training with the `wandb` library. Weights & biases is currently implemented in our `src/model-training/package/trainer/task.py` script.
 
 ![wnb image](references/wandb_outputs.png)
 
 ## Vertex AI Custom Jobs
-After running the shell scripts to submit a Vertex AI job, we can create serverless jobs with GCP. Below is a screenshot of our many failed jobs that we are still in the process of debugging (thank you, Shivas, for helping!).
+After running the shell scripts to submit a Vertex AI job, we can successfully create and finish serverless jobs for our baseline model training with GCP. Thank you, Shivas, for your help!
 ![serverless](references/vertex_ai_jobs.png)
