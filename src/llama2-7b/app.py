@@ -29,8 +29,8 @@ except subprocess.CalledProcessError as e:
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
 
-@app.route("/generate_text", methods=["POST"])
-def generate_text():
+@app.route("/v1/endpoints/<endpoint_id>/deployedModels/<deployed_model_id>", methods=["POST"])
+def predict(endpoint_id, deployed_model_id):
     try:
         data = request.get_json()
         if "prompt" not in data:
