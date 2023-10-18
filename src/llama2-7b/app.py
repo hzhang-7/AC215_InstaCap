@@ -1,6 +1,8 @@
 import logging
+import os
+import shlex 
 from flask import Flask, jsonify, request
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import LlamaForCausalLM, AutoTokenizer
 import transformers
 import torch
 import subprocess
@@ -14,19 +16,22 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Define the path to the hf-token file
-token_file_path = "./src/secrets/hf-token"
+# Read the Hugging Face token from the environment variable
+token_val = os.getenv("HF_TOKEN")
 
 # Build the command to log in using huggingface-cli
-command = f"huggingface-cli login --token $(cat {token_file_path})"
+command = f"huggingface-cli login --token {token_val}"
+
+# Split the command into a list for safe execution
+command_list = shlex.split(command)
 
 # Run the command using subprocess
 try:
-    subprocess.run(command, shell=True, check=True)
+    subprocess.run(command_list, check=True)
 except subprocess.CalledProcessError as e:
     print(f"Login failed: {e}")
 
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
+model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
 
 @app.route("/v1/endpoints/<endpoint_id>/deployedModels/<deployed_model_id>", methods=["POST"])
@@ -37,10 +42,10 @@ def predict(endpoint_id, deployed_model_id):
             return jsonify(error="Invalid input: 'prompt' field is required."), 400
 
         prompt = data["prompt"]
-        input_ids = tokenizer.encode(prompt, return_tensors="pt")
-        output = model.generate(input_ids, max_length=100, num_return_sequences=1, do_sample=True)
+        inputs = tokenizer(prompt, return_tensors="pt")
+        output = model.generate(inputs.input_ids, max_length=100)
 
-        generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
+        generated_text = tokenizer.batch_decode(output, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
         return jsonify(generated_text=generated_text), 200
 
     except Exception as e:
