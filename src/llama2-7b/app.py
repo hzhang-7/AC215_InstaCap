@@ -31,11 +31,9 @@ try:
 except subprocess.CalledProcessError as e:
     print(f"Login failed: {e}")
 
-# model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
-# tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
 
 ## v2 models
-model_path = 'openlm-research/open_llama_7b_v2'
+model_path = 'openlm-research/open_llama_3b_v2'
 
 tokenizer = LlamaTokenizer.from_pretrained(model_path)
 model = LlamaForCausalLM.from_pretrained(
@@ -52,27 +50,24 @@ def predict(endpoint_id, deployed_model_id):
     try:
         # Validate and extract input_text from request JSON
         instances = request.json.get("instances")
-        if not instances or not all(isinstance(instance, dict) for instance in instances):
+        if not instances or not isinstance(instances, list) or len(instances) != 1:
             logger.error("Invalid input_text")
             return jsonify(error="Invalid input_text"), 400
 
-        # Placeholder for generated texts
-        generated_texts = []
+        instance = instances[0]  # Get the single instance
 
-        # Generate text for each input instance
-        for instance in instances:
-            input_text = instance.get("sample_key")
-            if not input_text or not isinstance(input_text, str):
-                logger.error("Invalid input_text in one or more instances")
-                return jsonify(error="Invalid input_text in one or more instances"), 400
+        input_text = instance.get("prompt")
+        if not input_text or not isinstance(input_text, str):
+            logger.error("Invalid input_text in the instance")
+            return jsonify(error="Invalid input_text in the instance"), 400
 
-            input_ids = tokenizer.encode(input_text, return_tensors="pt")
-            output = model.generate(input_ids, max_length=100, num_beams=5, temperature=1.5)
-            generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
-            generated_texts.append(generated_text)
+        input_ids = tokenizer.encode(input_text, return_tensors="pt")
+        output = model.generate(input_ids, max_length=100, num_beams=5, temperature=1.5)
+        generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
 
-        # Return the generated texts 
-        return jsonify(predictions=generated_texts), 200
+        # Return the generated text
+        return jsonify(predictions=[generated_text]), 200
+    
 
     except Exception as e:
         # Log the error for debugging purposes
@@ -87,7 +82,7 @@ def get_model_info(endpoint_id, deployed_model_id):
         # manage and fetch specific model info
         # Example: Fetch and return some information about the model
         model_info = {
-            "model_name": "llama2-7b",
+            "model_name": "llama2-3b",
             "endpoint_id": endpoint_id,
             "deployed_model_id": deployed_model_id,
         }
