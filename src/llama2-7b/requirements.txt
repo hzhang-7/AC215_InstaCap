@@ -1,3 +1,5 @@
 flask==2.2.2
 Werkzeug==2.3.7
 transformers==4.31
+sentencepiece
+accelerate 
