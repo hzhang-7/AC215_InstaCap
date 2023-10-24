@@ -35,7 +35,7 @@ if __name__ == '__main__':
     project_id = "ac215-project-398320"
 
     # Endpoint ID from the model dashboard
-    endpoint_id = "6255308567394385920"
+    endpoint_id = "4499326925184958464"
 
     # Define the base URL for your specific region (us-central1 in this example)
     base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{endpoint_id}:predict"
