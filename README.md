@@ -82,9 +82,9 @@ Note: The `persistant-folder` and `secrets` are folders that are in the local di
 
 
 
-### Deploying LLaMA and BLIP on vertex AI with a Custom Docker Container
+## Deploying LLaMA and BLIP on vertex AI with a Custom Docker Container
 
-#### Build and tag Docker image using custom container
+We took the following steps to deploy LLaMA and BLIP on vertex AI with a Custom Docker Container
 
 ```
 [project_name]: ac215-project-398320
@@ -98,23 +98,32 @@ LLaMA
 [image_name]: llama2-3b-vertexai-img:latest 
 [region]: us-east1
 [display_name]: llama2-3b-vertexai-1 
+```
 
+#### 1. Build and tag Docker image using custom container
 
+```
 docker build -t gcr.io/[project_name]/[image_name] .
 ```
 
-#### Push image to Google Cloud Container Registry (GCR)
+#### 2. Push image to Google Cloud Container Registry (GCR)
 
 ```
-gcloud beta ai models upload  \
---region=[region]  \ 
---display-name=[display_name]  \ --container-image-uri=gcr.io/[project_name]/[image_name] \
+docker push gcr.io/[project_name]/[image_name]
+```
+
+#### 3. Build a model using the image on GCR 
+
+```
+gcloud beta ai models upload \
+--region=[region] \ 
+--display-name=[display_name] \ 
+--container-image-uri=gcr.io/[project_name]/[image_name] \
 --format="get(model)"
 ```
 
-#### Deploy the model to the endpoint using Vertex AI UI 
-Navigate to Model Registry and click on '''DEPLOY AND TEST''' to deploy model
-
+#### 4. Deploy the model to the endpoint using Vertex AI UI 
+Navigate to Model Registry and click on ```DEPLOY AND TEST``` to deploy the model. 
 
 ## Previous Work 
 
