@@ -3,6 +3,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 import re
+import os
 import requests
 import google.auth
 import google.auth.transport.requests
@@ -52,7 +53,7 @@ def prompt_llama(prompt, bearer_token, llama_base_url):
     '''
     passing in prompt to deployed llama
     '''
-    # Define the request body for your specific prompt and parameters
+    # Defining the request body for our specific prompt and parameters
     request_body = {
         "instances": [
             {
@@ -96,6 +97,7 @@ def main(bearer_token, blip_base_url, llama_base_url):
         prompt = f'Q: What is a {tone} Instagram caption of {blip_transcription}? A:'
         llama_response = prompt_llama(prompt=prompt, bearer_token=bearer_token, llama_base_url=llama_base_url)
         try:
+            # fixing formatting issues in raw llama response to get caption
             llama_answers = re.findall(r'A: "(.*?)"', llama_response[0])
             caption = llama_answers[0]
         except:
@@ -107,7 +109,8 @@ if __name__ == "__main__":
     SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
 
     # service account JSON file name
-    SERVICE_ACCOUNT_FILE = '../secrets/model_deployment.json'
+    # SERVICE_ACCOUNT_FILE = '../secrets/model_deployment.json'
+    SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE")
 
     # Load credentials from the service account file with the specified SCOPES
     cred = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
@@ -125,13 +128,13 @@ if __name__ == "__main__":
     project_id = "ac215-project-398320"
 
     # Endpoint ID from the model dashboard
-    blip_endpoint_id = "2583045283738812416" # changes every time you deploy
+    blip_endpoint_id = '8991667553487028224' # changes every time you deploy
 
     # Define the base URL for your specific region (us-central1 in this example)
     blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{blip_endpoint_id}:predict"
     
     # defining llama endpoints:
-    llama_endpoint_id = '7521882190917926912'
+    llama_endpoint_id = '5686665342764449792'
     llama_base_url = f"https://us-east1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-east1/endpoints/{llama_endpoint_id}:predict"
     
     main(bearer_token=bearer_token, blip_base_url=blip_base_url, llama_base_url=llama_base_url)
