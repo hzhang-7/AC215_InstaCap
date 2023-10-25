@@ -78,7 +78,7 @@ def predict(endpoint_id, deployed_model_id):
 @app.route("/v1/endpoints/<endpoint_id>/deployedModels/<deployed_model_id>", methods=["GET"])
 def get_model_info(endpoint_id, deployed_model_id):
     try:
-        # [Optional] You may use endpoint_id and deployed_model_id to
+        # Use endpoint_id and deployed_model_id to
         # manage and fetch specific model info
         # Example: Fetch and return some information about the model
         model_info = {

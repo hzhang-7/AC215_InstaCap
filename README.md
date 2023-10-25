@@ -15,29 +15,8 @@ A brief outline of our project is given below (subject to change)
 2. Prompt engineer LLAMA to create Instagram captions based off the BLIP transcriptions and user specified tone
 3. Create frontend and deploy the models
 
-### MILESTONE 3 SUBMISSION NOTE
-Our original plan was to finetune BLIP with webscraped Instagram posts and captions. However, we believe that this approach is unncessary given the nature of how Instagram captions often do not directly describe what happens in an Instagram post (the data we scraped seem to have support this assumption of unrelated captions with images).
 
-We decided to try a different approach in the milestone where we built a model from scratch utilizing RESNET (to extract image features) and BERT embeddings of BLIP transcriptions (to enrich our data/context/input). These two input layers along with the input sequences of the true captions (first $n$ words of the caption) are then added and passed into an LSTM layer in order to predict the $n+1$ th word of a caption. During time of inference, the model will generate captions in a loop predicting the next word while passing in the previous generated sequence as an input, the predicted image features from RESNET, and BERT embeddings of predicted BLIP transcriptions.
-
-Below is our baseline model summary:
-![model](references/model_summary.png)
-
-Our initial experimentation of this model is poor due to a small and low quality dataset.
-
-In order to generate higher quality captions, we are deciding to shift the scope of our project: we will utilize BLIP and prompt engineer LLAMA for Instagram caption generations. In future milestones, we will be focusing on hosting BLIP and LLAMA as well as creating a user friendly UI for this application.
-
-This milestone contains our efforts in the following:
-- Finetuning BLIP attempts
-- Complete scripts for scraping Instagram posts/captions that upload into GCS
-- Creating the model from scratch
-- Attempts for serverless training with Vertex AI
-- DVC implementation
-
-Additionally, our quota request for GPU access has not been approved. The following materials submitted in our milestone are for CPU jobs. We have been able to successfully create serverless jobs with CPU and WandB integration.
-
-
-# Milestone 3
+# Milestone 4
 
 The current structure of our repo is given below.
 
@@ -50,6 +29,20 @@ The current structure of our repo is given below.
           ├── blip_finetune.ipynb
       ├── references
       └── src
+            ├── blip-model
+                ├── app.py
+                ├── Dockerfile
+                ├── requirements.txt
+                ├── test_example.py
+            ├── cli
+                ├── cli.py
+                ├── docker-shell.sh
+                ├── Dockerfile
+                ├── requirements.txt
+            ├── llama-3b-v2
+                ├── app.py
+                ├── Dockerfile
+                ├── requirements.txt
             ├── persistant-folder
             ├── secrets
             ├── preprocessing
@@ -83,11 +76,67 @@ The current structure of our repo is given below.
                 ├── cli-multi-gpu.sh
                 ├── Pipfile
                 ├── Pipfile.lock
-
-             
-            
+                   
 --------
 Note: The `persistant-folder` and `secrets` are folders that are in the local directory (not pushed to GitHub). The `notebooks` folder contains code that is not part of any containers (e.g. EDA, reports, etc) and the `references` folder contains references. Currently, we have two `.ipynb` notebooks in our `notebooks` folder related to initial modeling experimentation (finetuning BLIP, creating/training our custom model).
+
+
+
+### Deploying LLaMA and BLIP on vertex AI with a Custom Docker Container
+
+#### Build and tag Docker image using custom container
+
+'''
+[project_name]: ac215-project-398320
+
+BLIP
+[image_name]: blip-vertexai-img:latest 
+[region]: us-central1
+[display_name]: blip-vertexai-1
+
+LLaMA
+[image_name]: llama2-3b-vertexai-img:latest 
+[region]: us-east1
+[display_name]: llama2-3b-vertexai-1 
+
+
+docker build -t gcr.io/[project_name]/[image_name] .
+'''
+
+#### Push image to Google Cloud Container Registry (GCR)
+'''
+gcloud beta ai models upload  \
+--region=[region]  \ 
+--display-name=[display_name]  \ --container-image-uri=gcr.io/[project_name]/[image_name] \
+--format="get(model)"
+'''
+
+#### Deploy the model to the endpoint using Vertex AI UI 
+Navigate to Model Registry and click on '''DEPLOY AND TEST''' to deploy model
+
+
+## Previous Work 
+
+### MILESTONE 3 SUBMISSION NOTE
+Our original plan was to finetune BLIP with webscraped Instagram posts and captions. However, we believe that this approach is unncessary given the nature of how Instagram captions often do not directly describe what happens in an Instagram post (the data we scraped seem to have support this assumption of unrelated captions with images).
+
+We decided to try a different approach in the milestone where we built a model from scratch utilizing RESNET (to extract image features) and BERT embeddings of BLIP transcriptions (to enrich our data/context/input). These two input layers along with the input sequences of the true captions (first $n$ words of the caption) are then added and passed into an LSTM layer in order to predict the $n+1$ th word of a caption. During time of inference, the model will generate captions in a loop predicting the next word while passing in the previous generated sequence as an input, the predicted image features from RESNET, and BERT embeddings of predicted BLIP transcriptions.
+
+Below is our baseline model summary:
+![model](references/model_summary.png)
+
+Our initial experimentation of this model is poor due to a small and low quality dataset.
+
+In order to generate higher quality captions, we are deciding to shift the scope of our project: we will utilize BLIP and prompt engineer LLAMA for Instagram caption generations. In future milestones, we will be focusing on hosting BLIP and LLAMA as well as creating a user friendly UI for this application.
+
+This milestone contains our efforts in the following:
+- Finetuning BLIP attempts
+- Complete scripts for scraping Instagram posts/captions that upload into GCS
+- Creating the model from scratch
+- Attempts for serverless training with Vertex AI
+- DVC implementation
+
+Additionally, our quota request for GPU access has not been approved. The following materials submitted in our milestone are for CPU jobs. We have been able to successfully create serverless jobs with CPU and WandB integration.
 
 
 ### Preprocessing
