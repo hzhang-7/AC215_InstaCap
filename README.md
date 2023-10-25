@@ -123,12 +123,12 @@ gcloud beta ai models upload \
 --format="get(model)"
 ```
 
-**4. Deploy the model to the endpoint using Vertex AI UI**
+**4. Deploy the model to the endpoint using Vertex AI UI** \
 Navigate to Model Registry and click on ```DEPLOY AND TEST``` to deploy the model. 
 
 ## Command Line Interface
 **Container Overview**:
-- For test usage to generate captions based on an image in your directory
+- For test usage to generate captions based on an image that exists in your directory
 
 **Container Files**:
 1. `src/cli/Dockerfile` - This Dockerfile is based on the official Debian-hosted Python 3.8 slim image. It sets the locale to UTF-8, updates the system, installs necessary dependencies, creates a non-root user and sets the working directory to `/app`. It then copies and installs Python packages from `requirements.txt` and finally adds the source code to the `/app` directory. The container starts with the `bash` command as the entry point. 
