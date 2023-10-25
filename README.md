@@ -86,7 +86,7 @@ Note: The `persistant-folder` and `secrets` are folders that are in the local di
 
 #### Build and tag Docker image using custom container
 
-'''
+```
 [project_name]: ac215-project-398320
 
 BLIP
@@ -101,15 +101,16 @@ LLaMA
 
 
 docker build -t gcr.io/[project_name]/[image_name] .
-'''
+```
 
 #### Push image to Google Cloud Container Registry (GCR)
-'''
+
+```
 gcloud beta ai models upload  \
 --region=[region]  \ 
 --display-name=[display_name]  \ --container-image-uri=gcr.io/[project_name]/[image_name] \
 --format="get(model)"
-'''
+```
 
 #### Deploy the model to the endpoint using Vertex AI UI 
 Navigate to Model Registry and click on '''DEPLOY AND TEST''' to deploy model
