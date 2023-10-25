@@ -11,9 +11,10 @@
 The goal of this project is to develop an application for Instagram caption generation. A user can upload a post they would like to caption along with a tone (e.g. quirky, funny, serious, happy, etc) for the caption.  
   
 A brief outline of our project is given below (subject to change)
-1. Use BLIP model to generate transcriptions of a user uploaded image
-2. Prompt engineer LLAMA to create Instagram captions based off the BLIP transcriptions and user specified tone
-3. Create frontend and deploy the models
+1. Deploy BLIP and LLaMA utilizing custom Docker containers
+2. Use BLIP to generate transcriptions of a user uploaded image
+3. Prompt engineer LLaMA to create Instagram-like captions based off the BLIP transcriptions and a specified tone
+4. Create frontend web app UI
 
 
 # Milestone 4
@@ -84,7 +85,7 @@ Note: The `persistant-folder` and `secrets` are folders that are in the local di
 
 ## Deploying LLaMA and BLIP on vertex AI with a Custom Docker Container
 
-We took the following steps to deploy LLaMA and BLIP on vertex AI with a Custom Docker Container
+We take the following steps to deploy LLaMA and BLIP on vertex AI with a custom Docker container
 
 ```
 [project_name]: ac215-project-398320
@@ -100,19 +101,19 @@ LLaMA
 [display_name]: llama2-3b-vertexai-1 
 ```
 
-#### 1. Build and tag Docker image using custom container
+**1. Build and tag Docker image using custom container**
 
 ```
 docker build -t gcr.io/[project_name]/[image_name] .
 ```
 
-#### 2. Push image to Google Cloud Container Registry (GCR)
+**2. Push image to Google Cloud Container Registry (GCR)**
 
 ```
 docker push gcr.io/[project_name]/[image_name]
 ```
 
-#### 3. Build a model using the image on GCR 
+**3. Build a model using the image on GCR**
 
 ```
 gcloud beta ai models upload \
@@ -122,12 +123,46 @@ gcloud beta ai models upload \
 --format="get(model)"
 ```
 
-#### 4. Deploy the model to the endpoint using Vertex AI UI 
+**4. Deploy the model to the endpoint using Vertex AI UI**
 Navigate to Model Registry and click on ```DEPLOY AND TEST``` to deploy the model. 
 
-## Previous Work 
+## Command Line Interface
+**Container Overview**:
+- For test usage to generate captions based on an image in your directory
 
-### MILESTONE 3 SUBMISSION NOTE
+**Container Files**:
+1. `src/cli/Dockerfile` - This Dockerfile is based on the official Debian-hosted Python 3.8 slim image. It sets the locale to UTF-8, updates the system, installs necessary dependencies, creates a non-root user and sets the working directory to `/app`. It then copies and installs Python packages from `requirements.txt` and finally adds the source code to the `/app` directory. The container starts with the `bash` command as the entry point. 
+2. `src/cli/docker-shell.sh` - This shell script sets environment variables, builds a Docker image named `cli-image` based on our Dockerfile, and then runs a Docker container with certain environment variables and mounted volumes. After running the container, it activates a virtual environment using `pipenv shell` within the container.
+3. `src/cli/requirements.txt` - This text file specifies the Python package dependencies with their respective versions for our Docker container.
+4. `src/cli/cli.py` - This Python script is our command-line tool that processes images and generates captions based on BLIP and LLaMA. It takes in two arguments: the image file path (must be a jpeg) and a one-word tone. The script then processes the image, sends it to the deployed BLIP model for image transcription, and uses the result as a prompt to the deployed LlaMA model to generate an Instagram caption. The script handles authentication, model requests, and error handling, providing users with generated captions for their images.
+
+**Demo**: \
+We first build our Docker image by running the shell script.
+```
+sh docker-shell.sh
+```
+Once we run our container, we can run our `cli.py` script to generate an Instagram caption. We will use this image for our demo example:
+![dogs](src/cli/dog.jpeg)
+
+We then run
+```
+python cli.py dog.jpeg funny
+```
+to get these outputs:
+```
+Image processed successfully! Sending to BLIP...
+BLIP caption: two dogs in a pool wearing sunglasses and floating rings
+Llama IG caption: I'm not a dog, but I play one on TV.
+```
+
+In general, a user must specify an image file path (must be jpeg) and a one word tone in order to get a their Instagram caption.
+```
+python cli.py [IMAGE_FILE_PATH] [ONE-WORD TONE]
+```
+
+
+## Previous work on custom generative text model
+
 Our original plan was to finetune BLIP with webscraped Instagram posts and captions. However, we believe that this approach is unncessary given the nature of how Instagram captions often do not directly describe what happens in an Instagram post (the data we scraped seem to have support this assumption of unrelated captions with images).
 
 We decided to try a different approach in the milestone where we built a model from scratch utilizing RESNET (to extract image features) and BERT embeddings of BLIP transcriptions (to enrich our data/context/input). These two input layers along with the input sequences of the true captions (first $n$ words of the caption) are then added and passed into an LSTM layer in order to predict the $n+1$ th word of a caption. During time of inference, the model will generate captions in a loop predicting the next word while passing in the previous generated sequence as an input, the predicted image features from RESNET, and BERT embeddings of predicted BLIP transcriptions.
@@ -152,7 +187,7 @@ Additionally, our quota request for GPU access has not been approved. The follow
 ### Preprocessing
 
 **Container Overview**:
-- Web-scrapes instagram posts and captions for different users
+- Web-scrapes Instagram posts and captions for different users
 - Preprocesses the scraped data into the desired format
 - Stores the processed data to GCP
 - Input to this container is source and destination is the GCS location
