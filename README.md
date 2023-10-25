@@ -172,7 +172,7 @@ Below is our baseline model summary:
 
 Our initial experimentation of this model is poor due to a small and low quality dataset.
 
-In order to generate higher quality captions, we are deciding to shift the scope of our project: we will utilize BLIP and prompt engineer LLAMA for Instagram caption generations. In future milestones, we will be focusing on hosting BLIP and LLAMA as well as creating a user friendly UI for this application.
+In order to generate higher quality captions, we are deciding to shift the scope of our project: we will utilize BLIP and prompt engineer LLaMA for Instagram caption generations. In future milestones, we will be focusing on hosting BLIP and LLaMA as well as creating a user friendly UI for this application.
 
 This milestone contains our efforts in the following:
 - Finetuning BLIP attempts
