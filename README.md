@@ -17,7 +17,7 @@ A brief outline of our project is given below (subject to change)
 4. Create frontend web app UI
 
 
-# Milestone 4
+# Milestone 5
 
 The current structure of our repo is given below.
 
@@ -30,6 +30,9 @@ The current structure of our repo is given below.
           ├── blip_finetune.ipynb
       ├── references
       └── src
+            ├── api-service
+                ├── api
+                    ├── service.py
             ├── blip-model
                 ├── app.py
                 ├── Dockerfile
@@ -40,6 +43,8 @@ The current structure of our repo is given below.
                 ├── docker-shell.sh
                 ├── Dockerfile
                 ├── requirements.txt
+            ├── frontend-simple
+                ├── index.html
             ├── llama-3b-v2
                 ├── app.py
                 ├── Dockerfile
@@ -126,39 +131,47 @@ gcloud beta ai models upload \
 **4. Deploy the model to the endpoint using Vertex AI UI** \
 Navigate to Model Registry and click on ```DEPLOY AND TEST``` to deploy the model. 
 
-## Command Line Interface
+## API Service
 **Container Overview**:
 - For test usage to generate captions based on an image that exists in your directory
 
 **Container Files**:
-1. `src/cli/Dockerfile` - This Dockerfile is based on the official Debian-hosted Python 3.8 slim image. It sets the locale to UTF-8, updates the system, installs necessary dependencies, creates a non-root user and sets the working directory to `/app`. It then copies and installs Python packages from `requirements.txt` and finally adds the source code to the `/app` directory. The container starts with the `bash` command as the entry point. 
-2. `src/cli/docker-shell.sh` - This shell script sets environment variables, builds a Docker image named `cli-image` based on our Dockerfile, and then runs a Docker container with certain environment variables and mounted volumes. After running the container, it activates a virtual environment using `pipenv shell` within the container.
-3. `src/cli/requirements.txt` - This text file specifies the Python package dependencies with their respective versions for our Docker container.
-4. `src/cli/cli.py` - This Python script is our command-line tool that processes images and generates captions based on BLIP and LLaMA. It takes in two arguments: the image file path (must be a jpeg) and a one-word tone. The script then processes the image, sends it to the deployed BLIP model for image transcription, and uses the result as a prompt to the deployed LlaMA model to generate an Instagram caption. The script handles authentication, model requests, and error handling, providing users with generated captions for their images.
+1. `src/api-service/Dockerfile` - This Dockerfile is based on the official Debian-hosted Python 3.8 slim image. It sets the locale to UTF-8, updates the system, installs necessary dependencies, creates a non-root user and sets the working directory to `/app`. It then copies and installs Python packages from `requirements.txt` and finally adds the source code to the `/app` directory. The container starts with the `bash` command as the entry point. 
+2. `src/api-service/docker-shell.sh` - This shell script sets environment variables, builds a Docker image named `instacap-api-service` based on our Dockerfile, and then runs a Docker container with certain environment variables and mounted volumes. After running the container, it activates a virtual environment using `pipenv shell` within the container.
+3. `src/api-service/Pipfile` - This file specifies the Python package dependencies with their respective versions for our Docker container.
+4. `src/api-service/api/service.py` - This Python script creates a Fast API endpoint to generate captions by processessing images and generating captions based on BLIP and LLaMA. The generate_caption endpoint takes in two arguments: the image file path (must be a jpeg) and a one-word tone. The script then processes the image, sends it to the deployed BLIP model for image transcription, and uses the result as a prompt to the deployed LlaMA model to generate an Instagram caption. The script handles authentication, model requests, and error handling, providing users with generated captions for their images. It then sends a response back with the caption.
 
 **Demo**: \
 We first build our Docker image by running the shell script.
 ```
 sh docker-shell.sh
 ```
-Once we run our container, we can run our `cli.py` script to generate an Instagram caption. We will use this image for our demo example:
-![dogs](src/cli/dog.jpeg)
-
-We then run
+Once we run our container, we host our api service on port 900 with the following command
 ```
-python cli.py dog.jpeg funny
-```
-to get these outputs:
-```
-Image processed successfully! Sending to BLIP...
-BLIP caption: two dogs in a pool wearing sunglasses and floating rings
-Llama IG caption: I'm not a dog, but I play one on TV.
+uvicorn api.service:app --host 0.0.0.0 --port 9000
 ```
 
-In general, a user must specify an image file path (must be jpeg) and a one word tone in order to get a their Instagram caption.
+
+6. ## Frontend-simple
+**Container Overview**:
+- This container makes a simple front end where users can select an image from their file system and generate a caption for it.
+
+**Container Files**:
+1. `src/frontend-simple/Dockerfile` - This Dockerfile is based on the official Debian-hosted Python 3.8 slim image. It updates the system, installs necessary dependencies like http-server, creates a non-root user and exposes port 8080. Finally, it adds the source code to the `/app` directory. The container starts with the `bash` command as the entry point.
+2. `src/frontend-simple/docker-shell.sh` - This shell script sets environment variables and builds a Docker image named `instacap-frontend-simple` based on our Dockerfile and runs the container with our image name
+3. `src/frontend-simple/index.html` - This html file is our main page for our app. It uses google style sheets and html to make a home page complete with an area to select and see a photo, input a tone, and a button to generate a caption. The javascript in this files hits our api service to get the caption.  
+
+**Demo**: \
+We first build our Docker image by running the shell script.
 ```
-python cli.py [IMAGE_FILE_PATH] [ONE-WORD TONE]
+sh docker-shell.sh
 ```
+Once we run our container, we run our file on port 8080 with the following command
+```
+http-server
+```
+
+With all our containers up and running, a user can then select an image, type in a tone, and get a caption!!
 
 
 ## Previous work on custom generative text model
