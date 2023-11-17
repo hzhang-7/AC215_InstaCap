@@ -150,7 +150,6 @@ Once we run our container, we host our api service on port 900 with the followin
 ```
 uvicorn api.service:app --host 0.0.0.0 --port 9000
 ```
-![Frontend](frontend-simple-screenshot.png)
 
 6. ## Frontend-simple
 **Container Overview**:
@@ -173,6 +172,7 @@ http-server
 
 With all our containers up and running, a user can then select an image, type in a tone, and get a caption!!
 
+![Frontend](frontend-simple-screenshot.png)
 
 ## Previous work on custom generative text model
 
