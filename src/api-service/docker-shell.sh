@@ -4,7 +4,7 @@
 set -e
 
 # Define some environment variables
-export IMAGE_NAME="mushroom-app-api-service"
+export IMAGE_NAME="instacap-api-service"
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../secrets/
 export SERVICE_ACCOUNT_FILE="../secrets/model_deployment.json"
