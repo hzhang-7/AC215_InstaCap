@@ -150,7 +150,7 @@ Once we run our container, we host our api service on port 900 with the followin
 ```
 uvicorn api.service:app --host 0.0.0.0 --port 9000
 ```
-
+![Frontend](frontend-simple-screenshot.png)
 
 6. ## Frontend-simple
 **Container Overview**:
