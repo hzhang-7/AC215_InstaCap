@@ -143,7 +143,7 @@ async def generate_caption(
 
         print(f'BLIP caption: {blip_transcription}')
         # get llama caption:
-        prompt = f'Q: What is a {tone} Instagram caption of {blip_transcription}? A:'
+        prompt = f'Q: What is one {tone} Instagram caption of {blip_transcription}. Please give only the caption with no other text. A:'
         llama_response = prompt_llama(prompt=prompt, bearer_token=bearer_token, llama_base_url=llama_base_url)
         # try:
         #     # fixing formatting issues in raw llama response to get caption
