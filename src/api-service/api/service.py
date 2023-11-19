@@ -71,10 +71,10 @@ def prompt_llama(prompt, bearer_token, llama_base_url):
         "Authorization": "Bearer {bearer_token}".format(bearer_token=bearer_token),
         "Content-Type": "application/json"
     }
-
     # Send a POST request to the model endpoint
     resp = requests.post(llama_base_url, json=request_body, headers=headers)
     response = resp.json()
+    print(resp.json())
     return response['predictions']
 
 
@@ -96,15 +96,6 @@ app.add_middleware(
 @app.get("/")
 async def get_index():
     return {"message": "Welcome to the API "}
-
-@app.post("/square_root/")
-async def square_root(data: dict):
-    input_data = data.get("data")
-    if input_data is not None:
-        result = input_data ** 0.5
-        return {"data": result}
-    else:
-        return {"error": "Invalid input data"}
 
 @app.post("/generate_caption/")
 async def generate_caption(
@@ -142,8 +133,8 @@ async def generate_caption(
     blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{blip_endpoint_id}:predict"
 
     # defining llama endpoints:
-    llama_endpoint_id = '5686665342764449792'
-    llama_base_url = f"https://us-east1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-east1/endpoints/{llama_endpoint_id}:predict"
+    llama_endpoint_id = '5438784844328861696'
+    llama_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{llama_endpoint_id}:predict"
     if processed_image is None:
         print(f"Error processing image")
     else:
@@ -160,7 +151,7 @@ async def generate_caption(
         #     caption = llama_answers[0]
         # except:
         #     caption = llama_response[0]
-        caption = llama_response[0].split("A: ", 1)[-1]
+        caption = llama_response[0].split("A: ")[1]
         print(f'Llama IG caption: {caption}')
 
     return {"caption": caption}
