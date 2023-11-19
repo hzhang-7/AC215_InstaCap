@@ -32,13 +32,14 @@ except subprocess.CalledProcessError as e:
     print(f"Login failed: {e}")
 
 
-## meta-llama/Llama-2-7b-chat-hf models, quantized with 4 bits
-model_path = 'haoranz/Llama-2-7b-chat-hf-int4'
+## meta-llama/Llama-2-13b-chat-hf models, quantized with 4 bits
+# If need 7B model, use 'haoranz/Llama-2-7b-chat-hf-int4' instead
+model_path = 'haoranz/Llama-2-13b-chat-hf-int4'
 
 tokenizer = LlamaTokenizer.from_pretrained(model_path)
 gptq_config = GPTQConfig(bits=4, exllama_config={"version": 2})
 model = LlamaForCausalLM.from_pretrained(
-    model_path, quantization_config=gptq_config, device_map="cuda"
+    model_path, quantization_config=gptq_config, device_map="auto"
 )
 
 # Function to log SafeTensors
