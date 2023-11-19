@@ -21,7 +21,7 @@ A brief outline of our project is given below (subject to change)
 
 ## Application Design Document
 
-Here is a link to our [Application Design Documemnt](https://docs.google.com/document/d/1nfIAfQsc5jb_c3mEyVgnvpwIUKysTz3JKVl3y6ujsDg/edit?usp=sharing)
+Here is a link to our [Application Design Document](https://docs.google.com/document/d/1nfIAfQsc5jb_c3mEyVgnvpwIUKysTz3JKVl3y6ujsDg/edit?usp=sharing)
 
 ## Project Organization
 The current structure of our repo is given below.
@@ -149,19 +149,19 @@ We first build our Docker image by running the shell script.
 ```
 sh docker-shell.sh
 ```
-Once we run our container, we host our api service on port 900 with the following command
+Once we run our container, we host our api service on port 9000 with the following command
 ```
 uvicorn api.service:app --host 0.0.0.0 --port 9000
 ```
 
-6. ## Frontend-simple
+## Frontend-simple
 **Container Overview**:
 - This container makes a simple front end where users can select an image from their file system and generate a caption for it.
 
 **Container Files**:
 1. `src/frontend-simple/Dockerfile` - This Dockerfile is based on the official Debian-hosted Python 3.8 slim image. It updates the system, installs necessary dependencies like http-server, creates a non-root user and exposes port 8080. Finally, it adds the source code to the `/app` directory. The container starts with the `bash` command as the entry point.
 2. `src/frontend-simple/docker-shell.sh` - This shell script sets environment variables and builds a Docker image named `instacap-frontend-simple` based on our Dockerfile and runs the container with our image name
-3. `src/frontend-simple/index.html` - This html file is our main page for our app. It uses google style sheets and html to make a home page complete with an area to select and see a photo, input a tone, and a button to generate a caption. The javascript in this files hits our api service to get the caption.  
+3. `src/frontend-simple/index.html` - This HTML file is our main page for our app. It uses google style sheets and HTML to make a homepage complete with an area to select and see a photo, specify a tone, and a button to generate a caption. The javascript in this files hits our API service to get the caption. 
 
 **Demo**: \
 We first build our Docker image by running the shell script.
@@ -173,11 +173,11 @@ Once we run our container, we run our file on port 8080 with the following comma
 http-server
 ```
 
-With all our containers up and running, a user can then select an image, type in a tone, and get a caption!!
+With all our containers up and running, a user can then select an image, type in a tone, and get a caption!! Below is an example of an uploaded image and related caption.
 
 ![Frontend](frontend-simple-screenshot.png)
 
-## Previous work on custom generative text model
+<!-- ## Previous work on custom generative text model
 
 Our original plan was to finetune BLIP with webscraped Instagram posts and captions. However, we believe that this approach is unncessary given the nature of how Instagram captions often do not directly describe what happens in an Instagram post (the data we scraped seem to have support this assumption of unrelated captions with images).
 
@@ -317,4 +317,4 @@ Below contains a screenshot of the output from our Weights & Biases page from se
 
 ## Vertex AI Custom Jobs
 After running the shell scripts to submit a Vertex AI job, we can successfully create and finish serverless jobs for our baseline model training with GCP. Thank you, Shivas, for your help!
-![serverless](references/vertex_ai_jobs.png)
+![serverless](references/vertex_ai_jobs.png) -->
