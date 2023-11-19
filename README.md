@@ -175,7 +175,7 @@ http-server
 
 With all our containers up and running, a user can then select an image, type in a tone, and get a caption!! Below is an example of an uploaded image and related caption.
 
-![Frontend](frontend-simple-screenshot.png)
+![Frontend](references/frontend-simple-screenshot.png)
 
 <!-- ## Previous work on custom generative text model
 
