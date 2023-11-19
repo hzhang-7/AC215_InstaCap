@@ -19,9 +19,12 @@ A brief outline of our project is given below (subject to change)
 
 # Milestone 5
 
-The current structure of our repo is given below.
+## Application Design Document
+
+Here is a link to our [Application Design Documemnt](https://docs.google.com/document/d/1nfIAfQsc5jb_c3mEyVgnvpwIUKysTz3JKVl3y6ujsDg/edit?usp=sharing)
 
 ## Project Organization
+The current structure of our repo is given below.
 ------------
       ├── LICENSE
       ├── README.md
