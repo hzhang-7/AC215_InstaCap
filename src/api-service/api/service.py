@@ -100,9 +100,11 @@ async def get_index():
 @app.post("/generate_caption/")
 async def generate_caption(
     image: UploadFile = File(...),
-    word: str = Form(...),
+    tone: str = Form(...),
+    audience: str = Form(...),
 ):
-    tone = word
+    tone = tone
+    audience = audience
     processed_image = process_image(image)
     
     SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
@@ -127,13 +129,13 @@ async def generate_caption(
     project_id = "ac215-project-398320"
 
     # Endpoint ID from the model dashboard
-    blip_endpoint_id = '6335353013896478720' # changes every time you deploy
+    blip_endpoint_id = '4506425372253880320' # changes every time you deploy
 
     # Define the base URL for your specific region (us-central1 in this example)
     blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{blip_endpoint_id}:predict"
 
     # defining llama endpoints:
-    llama_endpoint_id = '5438784844328861696'
+    llama_endpoint_id = '61372540039200768'
     llama_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{llama_endpoint_id}:predict"
     if processed_image is None:
         print(f"Error processing image")
@@ -143,7 +145,7 @@ async def generate_caption(
 
         print(f'BLIP caption: {blip_transcription}')
         # get llama caption:
-        prompt = f'Q: What is one {tone} Instagram caption of {blip_transcription}. Please give only the caption with no other text. A:'
+        prompt = f'Q: What is one {tone} Instagram caption of {blip_transcription} for a {audience} audience. Please give only the caption with no other text. A:'
         llama_response = prompt_llama(prompt=prompt, bearer_token=bearer_token, llama_base_url=llama_base_url)
         # try:
         #     # fixing formatting issues in raw llama response to get caption

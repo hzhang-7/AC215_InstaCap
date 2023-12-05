@@ -12,10 +12,15 @@ const styles = theme => ({
         textDecoration: "inherit",
     },
     appTitle: {
-        fontSize: "1.286rem",
-        lineHeight: "1.33",
+        fontSize: "3rem",
+        lineHeight: "2.5",
         fontWeight: "800",
         letterSpacing: "3px"
+    },
+    appSubTitle: {
+        fontSize: "1.25rem",
+        fontWeight: "800",
+        letterSpacing: "2.5px"
     },
     menuButton: {
         marginLeft: -12,

@@ -49,26 +49,17 @@ const Header = (props) => {
         <div className={classes.root}>
             <AppBar position="static" elevation={0}>
                 <Toolbar variant="dense">
-                    <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={toggleDrawer(true)}>
+                    {/* <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={toggleDrawer(true)}>
                         <MenuIcon />
-                    </IconButton>
+                    </IconButton> */}
                     <Link to="/" className={classes.appLink}>
                         <Typography className={classes.appTitle} >
-                            ⚡ App Building Crash Course
+                            📸🧢 InstaCap
+                        </Typography>
+                        <Typography className={classes.appSubTitle} style={{ marginTop: "-1rem" }}>
+                            Instagram Caption Generator
                         </Typography>
                     </Link>
-
-                    <div className={classes.grow} />
-                    <div>
-                        <IconButton color="inherit" component={Link} to="/">
-                            <Icon>home</Icon>
-                            <Typography variant="caption">&nbsp;Home</Typography>
-                        </IconButton>
-                        <IconButton color="inherit" component={Link} to="/currentmodel">
-                            <Icon>celebration</Icon>
-                            <Typography variant="caption">&nbsp;[Tutorial] Style Transfer</Typography>
-                        </IconButton>
-                    </div>
                 </Toolbar>
             </AppBar>
             <Drawer open={drawerOpen} onClose={toggleDrawer(false)}>
