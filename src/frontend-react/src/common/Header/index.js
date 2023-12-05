@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
 
 import styles from './styles';
 
-import TOC from '../../components/TOC';
+// import TOC from '../../components/TOC';
 
 const Header = (props) => {
     const { classes } = props;
@@ -79,7 +79,6 @@ const Header = (props) => {
                     onKeyDown={toggleDrawer(false)}
                 >
                     <div className={classes.list}>
-                        <TOC />
                     </div>
                 </div>
             </Drawer>
