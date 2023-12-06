@@ -240,6 +240,8 @@
 // };
 
 // export default ImageUploader;
+
+// dk
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { makeStyles, Typography } from '@material-ui/core';
@@ -270,35 +272,52 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     borderRadius: theme.shape.borderRadius,
   },
+  centeredText: {
+    textAlign: 'center',
+  },
 }));
 
 const ImageUploader = ({ onImageUpload }) => {
   const classes = useStyles();
   const [uploadedImage, setUploadedImage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0) {
       const image = acceptedFiles[0];
-      setUploadedImage(URL.createObjectURL(image));
-      onImageUpload(image);
+
+      // Check if the file type is JPEG
+      if (image.type === 'image/jpeg') {
+        setUploadedImage(URL.createObjectURL(image));
+        onImageUpload(image);
+        setErrorMessage('');
+      } else {
+        // Clear the uploaded image and display an error message for invalid file type
+        setUploadedImage(null);
+        onImageUpload(null);
+        setErrorMessage('Invalid file type. Please upload a JPEG image.');
+      }
     }
   }, [onImageUpload]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: 'image/*',
+    accept: 'image/jpeg',
   });
 
   return (
-    <div className={classes.container}>
+    <div className={`${classes.container} ${classes.centeredText}`}>
       <div {...getRootProps()} className={classes.dropzone}>
         <input {...getInputProps()} />
         {uploadedImage ? (
           <img src={uploadedImage} alt="Uploaded" className={classes.uploadedImage} />
         ) : isDragActive ? (
-          <Typography variant="h6">Drop the image here</Typography>
+          <Typography variant="h6">Drop the JPEG image here</Typography>
         ) : (
-          <Typography variant="h6">Drag and drop an image here, or click to select one</Typography>
+          <>
+            <Typography variant="h6">Drag and drop a JPEG image here, or click to select one</Typography>
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+          </>
         )}
       </div>
     </div>
