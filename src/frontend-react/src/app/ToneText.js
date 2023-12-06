@@ -1,24 +1,28 @@
+// component for adding the tone text box
+
 import React, { useState } from 'react';
 
 const ToneText = ({ onToneSubmit }) => {
   const [inputValue, setInputValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  
+  // trim input text
   const handleInputChange = (event) => {
     const inputText = event.target.value.trim();
     setInputValue(inputText);
+    onToneSubmit(inputText);
     setErrorMessage('');
   };
 
   const handleInputBlur = () => {
-    // Validate if the input contains only one word
+    // only allow one word
     if (inputValue === '' || inputValue.split(' ').length > 1) {
       setErrorMessage('Please enter one word to specify your tone!');
     }
   };
 
   const handleInputKeyPress = (event) => {
-    // Prevent the input from accepting spaces
+    // prevent the input from accepting spaces
     if (event.key === ' ') {
       event.preventDefault();
     }
