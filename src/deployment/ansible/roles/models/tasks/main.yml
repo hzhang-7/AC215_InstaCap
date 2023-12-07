@@ -1,0 +1,45 @@
+---
+- name: Install Vertex AI SDK
+  pip:
+    name: google-cloud-aiplatform
+
+- name: Deploy BLIP to Vertex AI
+  command: gcloud ai models deploy blip-vertexai-1 --region=us-central1 --project=ac215-project-398320
+  register: blip_deploy_result
+  
+- name: Deploy LLAMA to Vertex AI
+  command: gcloud ai models deploy llama2-13b-vertexai-1 --region=us-central1 --project=ac215-project-398320
+  register: llama_deploy_result
+
+- name: Set Facts for Model Endpoints
+  set_fact:
+    blip_endpoint: "{{ blip_deploy_result.stdout_lines[-1] }}"
+    llama_endpoint: "{{ llama_deploy_result.stdout_lines[-1] }}"
+
+
+# - name: Deploy BLIP Model on Vertex AI and Set Endpoint as Environment Variable
+#   hosts: localhost
+#   gather_facts: false
+#   tasks:
+#     - name: Deploy the Model on Vertex AI
+#       command: >
+#         gcloud beta ai models create-version {{ blip-vertexai-1}} \
+#         --region=us-central1 \
+#         --display-name=blip-vertexai-1 \
+#         --container-image-uri=gcr.io/ac215-project-398320/blip-vertexai-img:latest .
+#       environment:
+#         GOOGLE_APPLICATION_CREDENTIALS: /src/secrets/data_service_account.json
+#       register: deployment_output
+#       tags: deploy_model
+
+#     - name: Extract Endpoint URL
+#       set_fact:
+#         endpoint_url: "{{ deployment_output.stdout | regex_search('https://[^ ]+') }}"
+#       tags: extract_endpoint
+
+#     - name: Set Endpoint URL as an Environment Variable
+#       lineinfile:
+#         path: /path/to/your/backend/env.sh
+#         line: "export MODEL_ENDPOINT_URL={{ endpoint_url }}"
+#       delegate_to: localhost
+#       tags: set_environment_variable

@@ -1,0 +1,5 @@
+---
+- name: Run docker-shell.sh
+  command: sh docker-shell.sh
+  args:
+    chdir: ../../../../../frontend-react
