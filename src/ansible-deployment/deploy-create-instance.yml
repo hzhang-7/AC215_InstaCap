@@ -53,6 +53,14 @@
       gcp_compute_instance:
         name: "{{ machine_instance_name }}"
         machine_type: "{{ machine_type }}"
+        ###### For GPU VM instance
+        # guest_accelerators:
+        #   - accelerator_type: "projects/{{ gcp_project}}/zones/{{ gcp_zone }}/acceleratorTypes/{{ accelerator_type }}"
+        #     accelerator_count: 1
+        # scheduling:
+        #   on_host_maintenance: "terminate"
+        #   automatic_restart: true
+        ###### For GPU VM instance
         disks:
           - auto_delete: true
             boot: true
