@@ -1,7 +1,0 @@
-- name: Deploy Application
-  hosts: production
-  become: true
-  roles:
-    - frontend
-    - backend
-    - models
