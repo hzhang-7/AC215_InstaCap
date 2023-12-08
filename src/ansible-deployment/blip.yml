@@ -9,38 +9,38 @@
     model_display_name: blip-1
     endpoint_display_name: blip-1
     deployed_model_display_name: blip-1
-    accelerator_type: nvidia-tesla-v100
+    accelerator_type: nvidia-tesla-t4
 
   tasks:
-    # - name: Build and Tag Docker Image
-    #   community.docker.docker_image:
-    #     build:
-    #       path: "{{ dockerfile_path }}"
-    #     name: "{{ image_name }}"
-    #     tag: "{{ image_tag }}"
-    #     source: build
+    - name: Build and Tag Docker Image
+      community.docker.docker_image:
+        build:
+          path: "{{ dockerfile_path }}"
+        name: "{{ image_name }}"
+        tag: "{{ image_tag }}"
+        source: build
 
     - name: Login to Google Cloud Registry using Shell
       ansible.builtin.shell:
-        cmd: "cat ../secrets/data_service_account.json | docker login -u _json_key --password-stdin https://gcr.io"
+        cmd: "cat ../secrets/deployment.json | docker login -u _json_key --password-stdin https://gcr.io"
       args:
         executable: /bin/bash
 
-    # - name: Push Image to Google Cloud Registry
-    #   community.docker.docker_image:
-    #     name: "{{ image_name }}"
-    #     tag: "{{ image_tag }}"
-    #     push: yes
-    #     source: local
+    - name: Push Image to Google Cloud Registry
+      community.docker.docker_image:
+        name: "{{ image_name }}"
+        tag: "{{ image_tag }}"
+        push: yes
+        source: local
 
-    # - name: Upload Model to VertexAI using gcloud
-    #   shell: |
-    #     gcloud beta ai models upload \
-    #     --region={{ gcp_region }} \
-    #     --display-name={{ model_display_name }} \
-    #     --container-image-uri={{ image_name }}:{{ image_tag }} \
-    #     --format="get(model)"
-    #   register: upload_model_output
+    - name: Upload Model to VertexAI using gcloud
+      shell: |
+        gcloud beta ai models upload \
+        --region={{ gcp_region }} \
+        --display-name={{ model_display_name }} \
+        --container-image-uri={{ image_name }}:{{ image_tag }} \
+        --format="get(model)"
+      register: upload_model_output
 
     - name: Create VertexAI Endpoint
       shell: |
@@ -60,17 +60,17 @@
         dest: ./blip_endpoint.txt
       when: endpoint_id is defined
 
-    # - name: Deploy Model to Endpoint
-    #   shell: |
-    #     gcloud ai endpoints deploy-model {{ endpoint_id }} \
-    #     --region={{ gcp_region }} \
-    #     --model={{ upload_model_output.stdout_lines[0] }} \
-    #     --display-name={{ deployed_model_display_name }} \
-    #     --machine-type=n1-standard-4 \
-    #     --accelerator=count=1,type={{ accelerator_type }} \
-    #     --format="get(deployedModel.id)"
-    #   register: deploy_model_output
+    - name: Deploy Model to Endpoint
+      shell: |
+        gcloud ai endpoints deploy-model {{ endpoint_id }} \
+        --region={{ gcp_region }} \
+        --model={{ upload_model_output.stdout_lines[0] }} \
+        --display-name={{ deployed_model_display_name }} \
+        --machine-type=n1-standard-4 \
+        --accelerator=count=1,type={{ accelerator_type }} \
+        --format="get(deployedModel.id)"
+      register: deploy_model_output
 
-    # - name: Check Deployment Status
-    #   debug:
-    #     msg: "Model deployed successfully with deployedModel ID: {{ deploy_model_output.stdout }}"
+    - name: Check Deployment Status
+      debug:
+        msg: "Model deployed successfully with deployedModel ID: {{ deploy_model_output.stdout }}"
