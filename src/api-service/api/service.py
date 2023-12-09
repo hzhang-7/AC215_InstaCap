@@ -135,15 +135,21 @@ async def generate_caption(
 
         # Endpoint ID from the model dashboard
         #blip_endpoint_id = '6152491036057796608' # changes every time you deploy
-        blip_endpoint_id = os.getenv("BLIP_ENDPOINT")
+        # blip_endpoint_id = os.getenv("BLIP_ENDPOINT")
+        with open('../../ansible-deployment/blip_endpoint.txt') as file:
+            blip_endpoint = file.read()
 
         # Define the base URL for your specific region (us-central1 in this example)
-        blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{blip_endpoint_id}:predict"
+        # blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{blip_endpoint_id}:predict"
+        blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/{blip_endpoint}"
 
         # defining llama endpoints:
-        #llama_endpoint_id = '1770488598626304000'
-        llama_endpoint_id = os.getenv("LLAMA_ENDPOINT")
-        llama_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{llama_endpoint_id}:predict"
+        # llama_endpoint_id = '1770488598626304000'
+        # llama_endpoint_id = os.getenv("LLAMA_ENDPOINT")
+        with open('../../ansible-deployment/llama_endpoint.txt') as file:
+            llama_endpoint = file.read()
+            
+        llama_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/{llama_endpoint}"
         if processed_image is None:
             print(f"Error processing image")
         else:

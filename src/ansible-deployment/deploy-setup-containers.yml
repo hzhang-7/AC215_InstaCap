@@ -38,7 +38,7 @@
         var: tag
     - name: Create frontend container
       docker_container:
-        name: "frontend"
+        name: "instacap-frontend-react"
         image: "gcr.io/{{ gcp_project }}/instacap-frontend-react:{{ tag.stdout}}"
         state: started
         recreate: yes
@@ -58,16 +58,14 @@
 
     - name: Create api-service container
       docker_container:
-        name: "api-service"
+        name: "instacap-api-service"
         image: "gcr.io/{{ gcp_project }}/instacap-api-service:{{ tag.stdout}}"
         state: started
         recreate: yes
         published_ports:
           - 9000:9000
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp-service.json"
-          BLIP_ENDPOINT: "{{blip_endpoint}}"
-          LLAMA_ENDPOINT: "{{llama_endpoint}}"
+          GOOGLE_APPLICATION_CREDENTIALS: "/secrets/deployment.json"
         networks:
           - name: "{{docker_network_name}}"
         volumes:

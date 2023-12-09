@@ -9,6 +9,8 @@ export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../secrets/
 export SERVICE_ACCOUNT_FILE="../secrets/model_deployment.json"
 export PERSISTENT_DIR=$(pwd)/../../../persistent-folder/
+# export LLAMA_ENDPOINT=$LLAMA_ENDPOINT
+# export BLIP_ENDPOINT=$BLIP_ENDPOINT
 
 # Build the image based on the Dockerfile
 docker build -t $IMAGE_NAME -f Dockerfile .

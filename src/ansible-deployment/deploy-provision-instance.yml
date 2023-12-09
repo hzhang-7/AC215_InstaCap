@@ -1,3 +1,4 @@
+
 - name: Configure app server instance
   hosts: appserver
   connection: ssh
