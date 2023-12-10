@@ -12,8 +12,8 @@ export GCP_ZONE="us-central1-a"
 export GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json
 
 # Build the image based on the Dockerfile
-#docker build -t $IMAGE_NAME -f Dockerfile .
-docker build -t $IMAGE_NAME --platform=linux/amd64 -f Dockerfile .
+docker build -t $IMAGE_NAME -f Dockerfile .
+# docker build -t $IMAGE_NAME --platform=linux/amd64 -f Dockerfile .
 
 # Run the container
 docker run --rm --name $IMAGE_NAME -ti \

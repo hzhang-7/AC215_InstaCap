@@ -88,7 +88,7 @@ app = FastAPI(title="API Server", description="API Server", version="v1")
 # Enable CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
+    allow_credentials=False,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
@@ -100,7 +100,7 @@ app.add_middleware(
 async def get_index():
     return {"message": "Welcome to the API "}
 
-@app.post("/generate_caption/")
+@app.post("/generate_caption")
 async def generate_caption(
     image: UploadFile = File(...),
     tone: str = Form(...),
@@ -138,18 +138,21 @@ async def generate_caption(
         # blip_endpoint_id = os.getenv("BLIP_ENDPOINT")
         with open('../../ansible-deployment/blip_endpoint.txt') as file:
             blip_endpoint = file.read()
+            blip_endpoint = blip_endpoint.rsplit('/', 1)[-1]
 
         # Define the base URL for your specific region (us-central1 in this example)
-        # blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{blip_endpoint_id}:predict"
-        blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/{blip_endpoint}"
+        blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{blip_endpoint}:predict"
+        # blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/{blip_endpoint}:predict"
 
         # defining llama endpoints:
         # llama_endpoint_id = '1770488598626304000'
         # llama_endpoint_id = os.getenv("LLAMA_ENDPOINT")
         with open('../../ansible-deployment/llama_endpoint.txt') as file:
             llama_endpoint = file.read()
-            
-        llama_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/{llama_endpoint}"
+            llama_endpoint = llama_endpoint.rsplit('/', 1)[-1]
+
+        llama_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{llama_endpoint}:predict"
+        # llama_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/{llama_endpoint}:predict"
         if processed_image is None:
             print(f"Error processing image")
         else:
