@@ -88,7 +88,7 @@ app = FastAPI(title="API Server", description="API Server", version="v1")
 # Enable CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
+    allow_credentials=False,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
@@ -100,7 +100,7 @@ app.add_middleware(
 async def get_index():
     return {"message": "Welcome to the API "}
 
-@app.post("/generate_caption/")
+@app.post("/generate_caption")
 async def generate_caption(
     image: UploadFile = File(...),
     tone: str = Form(...),

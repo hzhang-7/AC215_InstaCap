@@ -23,9 +23,9 @@ const App = () => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedAudience, setSelectedAudience] = useState('');
   const [generatedCaption, setGeneratedCaption] = useState('');
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [buttonText, setButtonText] = useState('Copy Caption');
-  
+
   // function to handle tone submission
   const handleToneSubmit = (tone) => {
     // set tone
@@ -43,7 +43,7 @@ const App = () => {
     // set audience
     setSelectedAudience(audience);
   };
-  
+
   // function to send request to FastAPI
   const handleGenerateClick = () => {
     // create input
@@ -51,12 +51,12 @@ const App = () => {
     formData.append('image', uploadedImage);
     formData.append('tone', inputValue);
     formData.append('audience', selectedAudience);
-    
+
     // start buffer icon
     setLoading(true);
 
     // send API request
-    axios.post('http://localhost:9000/generate_caption/', formData, {
+    axios.post('/api/generate_caption', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -67,7 +67,7 @@ const App = () => {
       })
       .catch(error => {
         setLoading(false);
-        console.error('Error generating caption:', error);
+        console.error('Error generating caption:', error.response.data);
       });
   };
 

@@ -1,11 +1,6 @@
 # # Use the official Ubuntu image as the base
 FROM ubuntu:20.04
 
-# running into an error of "no matching manifest for linux amd64/v2 when trying to run the ansible playbook, trying this:"
-# Use the official Ubuntu image as the base with explicit platform specification
-# FROM --platform=linux/amd64 ubuntu:20.04
-# this didn't work :(
-
 # Set the environment variable for non-interactive installations
 ENV DEBIAN_FRONTEND=noninteractive
 
