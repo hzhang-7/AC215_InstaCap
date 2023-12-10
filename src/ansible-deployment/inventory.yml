@@ -19,4 +19,4 @@ all:
     children:
         appserver:
             hosts:
-                104.198.61.83 # Needs to change
+                35.225.49.197 # Needs to change
