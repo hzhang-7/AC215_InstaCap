@@ -19,6 +19,9 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+      - name: Install dependencies
+        run: |
+          pip install requests kubernetes
       - name: Configure Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
       - name: Configure Docker Client
