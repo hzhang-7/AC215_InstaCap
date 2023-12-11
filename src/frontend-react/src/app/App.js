@@ -134,4 +134,5 @@ const App = () => {
   // Return View
   return view;
 };
+
 export default App;
