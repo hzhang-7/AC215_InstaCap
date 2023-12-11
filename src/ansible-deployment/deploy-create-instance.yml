@@ -105,7 +105,7 @@
 #       add_host: hostname={{ instance.networkInterfaces[0].accessConfigs[0].natIP }} groupname=new_instances
 #       when: cluster_state == "present"
 
-
+# trying the yml file directly from tutorial:
 - name: Create App Application Machine
   hosts: localhost
   environment:
