@@ -194,6 +194,6 @@ async def generate_caption(
 @app.get("/status")
 async def get_api_status():
     return {
-        "version": "2.1",
+        "version": "2.2",
         # "tf_version": tf.__version__,
     }
