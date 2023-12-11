@@ -57,7 +57,7 @@
     - name: Save Endpoint ID to File
       copy:
         content: "{{ endpoint_id }}"
-        dest: ./blip_endpoint.txt
+        dest: ../secrets/blip_endpoint.txt
       when: endpoint_id is defined
 
     - name: Deploy Model to Endpoint

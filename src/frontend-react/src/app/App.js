@@ -24,7 +24,7 @@ const App = () => {
   const [selectedAudience, setSelectedAudience] = useState('');
   const [generatedCaption, setGeneratedCaption] = useState('');
   const [loading, setLoading] = useState(false);
-  const [buttonText, setButtonText] = useState('Copy Caption');
+  // const [buttonText, setButtonText] = useState('Copy Caption');
 
   // function to handle tone submission
   const handleToneSubmit = (tone) => {
@@ -72,16 +72,22 @@ const App = () => {
   };
 
   // function for copying caption
-  const handleCopyClick = () => {
-    navigator.clipboard.writeText(generatedCaption)
-      .then(() => {
-        console.log('Caption copied to clipboard');
-        setButtonText('Copied!');
-      })
-      .catch((error) => {
-        console.error('Error copying to clipboard:', error);
-      });
-  };
+  // const handleCopyClick = () => {
+  //   if (generatedCaption) {
+  //     navigator.clipboard.writeText(generatedCaption)
+  //       .then(() => {
+  //         console.log('Caption copied to clipboard');
+  //         setButtonText('Copied!');
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error copying to clipboard:', error);
+  //       });
+  //   } else {
+  //     console.error('No generated caption to copy.');
+  //   }
+  // };
+
+
 
   // Build App
   let view = (
@@ -113,9 +119,9 @@ const App = () => {
                 >
                   Generated Caption:<br /> {generatedCaption}
                 </p>
-                <Button onClick={handleCopyClick} variant="contained" color="primary" style={{ marginTop: '10px' }}>
+                {/* <Button onClick={handleCopyClick} variant="contained" color="primary" style={{ marginTop: '10px' }}>
                   {buttonText}
-                </Button>
+                </Button> */}
               </div>
             )}
           </Content>

@@ -15,6 +15,16 @@
         src: ../secrets/gcp-service.json
         dest: "/srv/secrets/gcp-service.json"
         mode: 0644
+    - name: Copy blip_endpoint.txt
+      copy:
+        src: ../secrets/blip_endpoint.txt
+        dest: "/srv/secrets/blip_endpoint.txt"
+        mode: 0644
+    - name: Copy llama_endpoint.txt
+      copy:
+        src: ../secrets/llama_endpoint.txt
+        dest: "/srv/secrets/llama_endpoint.txt"
+        mode: 0644
     - name: Authenticate gcloud using service account
       shell: "gcloud auth activate-service-account --key-file /srv/secrets/gcp-service.json"
     
@@ -65,7 +75,9 @@
         published_ports:
           - 9000:9000
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: "/secrets/deployment.json"
+          GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp-service.json"
+          BLIP_ENDPOINT: "/secrets/blip_endpoint.txt"
+          LLAMA_ENDPOINT: "/secrets/llama_endpoint.txt"
         networks:
           - name: "{{docker_network_name}}"
         volumes:
