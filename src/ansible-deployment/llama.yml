@@ -57,7 +57,7 @@
     - name: Save Endpoint ID to File
       copy:
         content: "{{ endpoint_id }}"
-        dest: ./llama_endpoint.txt
+        dest: ../secrets/llama_endpoint.txt
       when: endpoint_id is defined
 
     - name: Deploy Model to Endpoint
