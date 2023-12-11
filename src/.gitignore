@@ -1,0 +1,4 @@
+/persistent-folder
+/secrets
+/ansible-deployment/blip_endpoint.txt
+/ansible-deployment/llama_endpoint.txt

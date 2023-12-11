@@ -1,0 +1,22 @@
+all:
+    vars:
+      ansible_user: sa_114164878397462937494   # Needs to change
+      ansible_ssh_private_key_file: "../secrets/ssh-key-deployment"
+      gcp_service_account_file: "../secrets/deployment.json"
+      gcp_service_account_email: "deployment@ac215-project-398320.iam.gserviceaccount.com"
+      gcp_auth_kind: "serviceaccount"
+      gcp_scopes: "https://www.googleapis.com/auth/compute"
+      gcp_project: "ac215-project-398320"
+      gcp_region: "us-central1"
+      gcp_zone: "us-central1-a"
+      docker_network_name: "appnetwork"
+      persistent_disk_name: "persistent-folder"
+      persistent_disk_size: 50
+      machine_instance_name: "instacap-instance"
+      machine_type: "n1-standard-4"
+      machine_disk_size: 50
+
+    children:
+        appserver:
+            hosts:
+                34.29.86.29 # Needs to change
