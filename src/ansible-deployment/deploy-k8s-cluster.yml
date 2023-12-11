@@ -125,10 +125,43 @@
     register: create_secret_op
     ignore_errors: yes
     when: cluster_state == "present"
+
+  # - name: Importing blip endpoint
+  #   shell: |
+  #      #!/bin/bash
+  #     kubectl create secret generic blip-endpoint --from-file=blip_endpoint.txt=../secrets/blip_endpoint.txt --namespace="{{cluster_name}}-namespace"
+  #   register: create_secret_blip
+  #   ignore_errors: yes
+  #   when: cluster_state == "present"
+  - name: Importing blip endpoint
+    shell: |
+      #!/bin/bash
+      kubectl create secret generic blip-endpoint --from-file=blip_endpoint.txt=../secrets/blip_endpoint.txt --namespace="{{cluster_name}}-namespace"
+    register: create_secret_blip
+    ignore_errors: yes
+    when: cluster_state == "present"
+
+  - name: Importing llama endpoint
+    shell: |
+      #!/bin/bash
+      kubectl create secret generic llama-endpoint --from-file=llama_endpoint.txt=../secrets/llama_endpoint.txt --namespace="{{cluster_name}}-namespace"
+    register: create_secret_llama
+    ignore_errors: yes
+    when: cluster_state == "present"
   
   - name: "Print Create Secret Output"
     debug:
       var: create_secret_op
+    when: cluster_state == "present"
+
+  - name: "Print Create Blip Endpoint"
+    debug:
+      var: create_secret_blip
+    when: cluster_state == "present"
+
+  - name: "Print Create Llama Endpoint"
+    debug:
+      var: create_secret_llama
     when: cluster_state == "present"
   
   - name: "Create Deployment for Frontend"
@@ -150,7 +183,7 @@
                 run: frontend
             spec:
               containers:
-              - image: "gcr.io/{{ gcp_project }}/mushroom-app-frontend-react:{{ tag.stdout}}"
+              - image: "gcr.io/{{ gcp_project }}/instacap-frontend-react:{{ tag.stdout}}"
                 imagePullPolicy: IfNotPresent
                 name: frontend
                 ports:
@@ -184,8 +217,14 @@
                 - name: google-cloud-key
                   secret:
                     secretName: gcp-service-key
+                - name: blip-endpoint
+                  secret:
+                    secretName: blip-endpoint
+                - name: llama-endpoint
+                  secret:
+                    secretName: llama-endpoint
               containers:
-              - image: gcr.io/{{ gcp_project }}/mushroom-app-api-service:{{ tag.stdout}}
+              - image: gcr.io/{{ gcp_project }}/instacap-api-service:{{ tag.stdout}}
                 imagePullPolicy: IfNotPresent
                 name: api
                 ports:
@@ -197,11 +236,20 @@
                     #readOnly: false
                   - name: google-cloud-key
                     mountPath: /secrets
+                  - name: blip-endpoint
+                    mountPath: /secrets/blip
+                  - name: llama-endpoint
+                    mountPath: /secrets/llama
+
                 env:
                   - name: GOOGLE_APPLICATION_CREDENTIALS
                     value: /secrets/gcp-service.json
-                  - name: GCS_BUCKET_NAME
-                    value: mushroom-app-models
+                  # - name: GCS_BUCKET_NAME
+                  #   value: mushroom-app-models
+                  - name: BLIP_ENDPOINT
+                    value: /secrets/blip/blip_endpoint.txt
+                  - name: LLAMA_ENDPOINT
+                    value: /secrets/llama/llama_endpoint.txt
     when: cluster_state == "present"
 
   - name: "Create Service for Frontend"

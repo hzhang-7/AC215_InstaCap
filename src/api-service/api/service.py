@@ -190,3 +190,4 @@ async def generate_caption(
         # If there's a validation error, capture and return the details
         print(image)
         return e.detail
+    
