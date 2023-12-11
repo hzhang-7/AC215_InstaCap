@@ -318,3 +318,4 @@ Below contains a screenshot of the output from our Weights & Biases page from se
 ## Vertex AI Custom Jobs
 After running the shell scripts to submit a Vertex AI job, we can successfully create and finish serverless jobs for our baseline model training with GCP. Thank you, Shivas, for your help!
 ![serverless](references/vertex_ai_jobs.png) -->
+
