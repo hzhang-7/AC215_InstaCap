@@ -6,4 +6,4 @@ all:
       gcp_scopes: "https://www.googleapis.com/auth/compute"
       gcp_project: "ac215-project-398320"
       gcp_region: "us-central1"
-      gcp_zone: "uus-central1-a"
+      gcp_zone: "us-central1-a"
