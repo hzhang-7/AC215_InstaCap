@@ -135,4 +135,11 @@ const App = () => {
   return view;
 };
 
+@app.get("/status")
+async def get_api_status():
+    return {
+        "version": "2.1",
+        // "tf_version": tf.__version__,
+    }
+
 export default App;
