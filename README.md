@@ -1,4 +1,4 @@
-# AC215 Project: InstaCap
+# AC215 Final Project: InstaCap
 
 ## Team Members
 - Isha Vaish (ishavaish@g.harvard.edu)
@@ -7,17 +7,11 @@
 - Haoran Zhang (haoran_zhang@g.harvard.edu)
 - Mike Binkowski (mbinkowski@college.harvard.edu)
 
-## Project
-The goal of this project is to develop an application for Instagram caption generation. A user can upload a post they would like to caption along with a tone (e.g. quirky, funny, serious, happy, etc) for the caption.  
-  
-A brief outline of our project is given below (subject to change)
-1. Deploy BLIP and LLaMA utilizing custom Docker containers
-2. Use BLIP to generate transcriptions of a user uploaded image
-3. Prompt engineer LLaMA to create Instagram-like captions based off the BLIP transcriptions and a specified tone
-4. Create frontend web app UI
+## Presentation Video
+[Here](https://drive.google.com/file/d/1479kNGTI2mwlpMR3DJuUCykCgDIdxccj/view?usp=sharing) is a video where we present our project.
 
-
-# Milestone 5
+## Blog Post
+[Here](placeholder_link) is a Medium post describing our project and methods in detail.
 
 ## Application Design Document
 
@@ -28,33 +22,110 @@ The current structure of our repo is given below.
 ------------
       ├── LICENSE
       ├── README.md
+      ├── .github
+          ├── workflows
+              ├── ci-cid.yml
       ├── notebooks
           ├── baseline_modeling.ipynb
           ├── blip_finetune.ipynb
       ├── references
+          ├── demo_k8s.mov
+          ├── frontend-simple-screenshot.png
+          ├──kubernetes_cluster.jpg
+          ├──model_summary.png
+          ├──vertex_ai_jobs.png
+          ├──wandb_outputs.png
       └── src
-            ├── api-service
-                ├── api
-                    ├── service.py
-            ├── blip-model
-                ├── app.py
-                ├── Dockerfile
-                ├── requirements.txt
-                ├── test_example.py
-            ├── cli
-                ├── cli.py
-                ├── docker-shell.sh
-                ├── Dockerfile
-                ├── requirements.txt
-            ├── frontend-simple
-                ├── index.html
-            ├── llama-3b-v2
-                ├── app.py
-                ├── Dockerfile
-                ├── requirements.txt
-            ├── persistant-folder
-            ├── secrets
-            ├── preprocessing
+          ├── ansible-deployment
+              ├── nginx-conf
+                  ├── nginx
+              ├── blip.yml
+              ├── deploy-app.sh
+              ├── deploy-create-instance.yml
+              ├── deploy-docker-images.yml
+              ├── deploy-k8s-cluster.yml
+              ├── deploy-provision-instance.yml
+              ├── deploy-setup-containers.yml
+              ├── deploy-setup-webserver.yml
+              ├── docker-entrypoint.sh
+              ├── docker-shell.sh
+              ├── Dockerfile
+              ├── inventory-prod.yml
+              ├── inventory.yml
+              ├── llama.yml
+              ├── update-k8s-cluster.yml
+          ├── api-service
+              ├── api
+                  ├── service.py
+              ├── docker-entrypoint.sh
+              ├── docker-shell.bat
+              ├── docker-shell.sh
+              ├── Dockerfile
+              ├── Pipfile
+              ├── Pipfile.lock
+          ├── blip-model
+              ├── app.py
+              ├── Dockerfile
+              ├── requirements.txt
+              ├── test_example.py
+          ├── cli
+              ├── cli.py
+              ├── docker-shell.sh
+              ├── Dockerfile
+              ├── requirements.txt
+          ├── frontend-react
+              ├── node_modules
+                  ├── ...        <- dependencies of our react app
+              ├── public
+                  ├── index.html
+                  ├── manifest.json
+              ├── src
+                  ├── app
+                      ├── App.css
+                      ├── App.js
+                      ├── audienceDropDown.js
+                      ├── generateButton.js
+                      ├── imageUploader.js
+                      ├── Theme.js
+                      ├── ToneText.js
+                  ├── common
+                      ├── Content
+                          ├──index.js
+                          ├── styles.js
+                      ├── Footer
+                          ├── index.js
+                          ├── styles.js
+                      ├── Header
+                          ├── index.js
+                          ├── styles.js
+                  ├── index.css
+                  ├── index.js
+              ├── .gitignore
+              ├── docker-shell.bat
+              ├── docker-shell.sh
+              ├── Dockerfile
+              ├── Dockerfile.dev
+              ├── env.development
+              ├── env.production
+              ├── package-lock.json
+              ├── package.json
+              ├── yarn.lock
+          ├── frontend-simple
+              ├── index.html
+              ├── docker-shell.bat
+              ├── docker-shell.sh
+              ├── Dockerfile
+          ├── llama-3b-v2
+              ├── app.py
+              ├── Dockerfile
+              ├── requirements.txt
+          ├── llama-13b
+              ├── app.py
+              ├── Dockerfile
+              ├── requirements.txt
+          ├── persistant-folder
+          ├── secrets
+          ├── preprocessing
                 ├── Dockerfile
                 ├── docker-shell.sh
                 ├── Pipfile
@@ -64,14 +135,14 @@ The current structure of our repo is given below.
                 ├── get_usernames.py
                 ├── get_data.py
                 └── create_dataset.py
-            ├── data-versioning
+          ├── data-versioning
                 ├── Dockerfile
                 ├── docker-shell.sh
                 ├── download_data.py
                 ├── Pipfile
                 ├── Pipfile.lock
                 ├── prep.sh
-            ├── model-training
+          ├── model-training
                 ├── package
                     ├── trainer
                         ├── __init__.py
@@ -89,9 +160,94 @@ The current structure of our repo is given below.
 --------
 Note: The `persistant-folder` and `secrets` are folders that are in the local directory (not pushed to GitHub). The `notebooks` folder contains code that is not part of any containers (e.g. EDA, reports, etc) and the `references` folder contains references. Currently, we have two `.ipynb` notebooks in our `notebooks` folder related to initial modeling experimentation (finetuning BLIP, creating/training our custom model).
 
+## Project
+We develop an application for Instagram caption generation. A user can upload a post they would like to caption along with a tone (e.g. quirky, funny, serious, happy, etc) for the caption. Our solution includes a robust pipeline with a backend API service and a frontend application implemented with React. Our user-facing application ties in various components from our previous milestones.
+
+A brief overview of our application is as so:
+1. User uploads an image
+2. User specifies a tone for their desired caption
+3. User selects what kind of audience their caption is for (i.e. personal, promotional, academic)
+4. Send image to BLIP to get a description of the uploaded image
+5. Get Instagram-like captions from LLaMA through prompt engineering based off the BLIP description and specified tone
+
+[INSERT GIF HERE]
+
+## Kubernetes Deployment
+We've implemented a deployment strategy for our frontend and backend on a Kubernetes cluster to handle load balancing and failover seamlessly. Our approach involves utilizing Ansible scripts to orchestrate the creation and updating of the Kubernetes cluster. Leveraging Ansible enables us to treat our infrastructure as code, allowing us to efficiently track and manage our application's infrastructure within GitHub. This approach greatly streamlines the process of setting up automated deployments for our application.
+
+We can see our deployed application on a Kubernetes cluster in GCP here:
+![Cluster](references/kubernetes_cluster.png)
+
+### Deploying BLIP and LLaMA
+Before deploying our models, we deploy our BLIP and LLaMA (In practice, these models should always be deployed--we undeploy our models due to compute costs/our limited resources) models.
+
+- Run the command `cd src/ansible-deployment` to be in the correct directory
+- Run `sh docker-shell.sh`
+- Deploy BLIP and LLaMA
+```
+ansible-playbook blip.yml llama.yml
+```
+
+### API Service Container
+In this container, we have all the files necessary to run and expose the API.
+To run this container locally:
+
+- Run the command `cd src/api-service` to be in the correct directory
+- Run `sh docker-shell.sh`
+- In the Docker container, run `uvicorn api.service:app --host 0.0.0.0 --port 9000`
+- To see if the API is running, visit `http://localhost:9000`
+
+### Frontend Container
+In this container, we have all the files necessary to build our app implemented with React.
+To run this container locally:
+
+- Run the command `cd src/frontend-react` to be in the correct directory
+- Run `sh docker-shell.sh`
+- If running the Docker container for the first time, run `yarn install`
+- Inside the container, run `yarn start`
+- Visit `http://localhost:3000` to view the application
+
+### Deployment
+We utilize GCP (Google Cloud Platform) to deploy our containers and all images are uploaded in GCR (Google Cloud Registry).
+
+To run the container locally:
+
+- Run the command `cd src/ansible-deployment` to be in the correct directory
+- Run `sh docker-shell.sh`
+- Build and push the Docker containers to GCR by running
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
+- Create and deploy cluster by running
+```
+ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=present
+```
+- [OPTIONAL]: Try some `kubectl` commands
+```
+kubectl get all
+kubectl get all --all-namespaces
+kubectl get pods --all-namespaces
+
+kubectl get componentstatuses
+kubectl get nodes
+```
+- View the application by copying the `nginx_ingress_ip` printed in the terminal from the create cluster command and visiting `http://<NGINX INGRESS IP>.sslip.io`
+
+- Delete the the cluster by running
+```
+ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=absent
+```
+
+## Deploy using GitHub Actions
+We have integrated CI/CD through Github Actions, enabling us to initiate deployment or any other pipeline in response to GitHub events. Our CI/CD workflow utilizes a deployment container, which triggers the building of Docker images, pushes them to Google Container Registry (GCR) upon code changes, and subsequently deploys the updated containers to ensure the continuous updating of our Kubernetes cluster.
+
+Our `ci-cd.yml` file is designed to trigger on specific commit messages and, when triggered, build a Docker image and deploy the application to a Kubernetes cluster using Ansible scripts. The specific conditions and actions are based on commit message patterns like `'/run-'` and `'/run-deploy-app'`.
+
+## Acknowledgements
+Team InstaCap would like to acknowledge our TF, Tale Lokvenec, for his support and guidance throughout the entire semester! Thank you so much, Tale :)
 
 
-## Deploying LLaMA and BLIP on vertex AI with a Custom Docker Container
+<!-- ## Deploying LLaMA and BLIP on vertex AI with a Custom Docker Container
 
 We take the following steps to deploy LLaMA and BLIP on vertex AI with a custom Docker container
 
@@ -175,7 +331,7 @@ http-server
 
 With all our containers up and running, a user can then select an image, type in a tone, and get a caption!! Below is an example of an uploaded image and related caption.
 
-![Frontend](references/frontend-simple-screenshot.png)
+![Frontend](references/frontend-simple-screenshot.png) -->
 
 <!-- ## Previous work on custom generative text model
 
