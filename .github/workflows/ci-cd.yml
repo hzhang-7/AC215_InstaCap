@@ -32,19 +32,10 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-      name: Build Deployment Container 
+      - name: Build Deployment Container 
         run: |-
           cd ${{ github.workspace }}/src/ansible-deployment/
           docker build -t instacap-deployment -f Dockerfile .
-      # - name: Build API Service Container 
-      #   run: |-
-      #     cd ${{ github.workspace }}/src/api-service/
-      #     docker build -t instacap-service -f Dockerfile .
-      # - name: Build Frontend Container 
-      #   run: |-
-      #     cd ${{ github.workspace }}/src/frontend-react/
-      #     docker build -t instacap-frontend -f Dockerfile .
-      # - run: echo "Job's status is ${{ job.status }}."
       - name: Run Deploy App
         if: contains(github.event.head_commit.message, '/run-deploy-app')
         run: |-
