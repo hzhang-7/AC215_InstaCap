@@ -18,7 +18,8 @@
 Here is a link to our [Application Design Document](https://docs.google.com/document/d/1nfIAfQsc5jb_c3mEyVgnvpwIUKysTz3JKVl3y6ujsDg/edit?usp=sharing)
 
 ## Project Organization
-The current structure of our repo is given below.
+The current structure of our repo is given below:
+
 ------------
       ├── LICENSE
       ├── README.md
@@ -158,10 +159,10 @@ The current structure of our repo is given below.
                 ├── Pipfile.lock
                    
 --------
-Note: The `persistant-folder` and `secrets` are folders that are in the local directory (not pushed to GitHub). The `notebooks` folder contains code that is not part of any containers (e.g. EDA, reports, etc) and the `references` folder contains references. Currently, we have two `.ipynb` notebooks in our `notebooks` folder related to initial modeling experimentation (finetuning BLIP, creating/training our custom model).
+**Note**: The `persistant-folder` and `secrets` are folders that are in the local directory (not pushed to GitHub). The `notebooks` folder contains code that is not part of any containers (e.g. EDA, reports, etc) and the `references` folder contains references. Currently, we have two `.ipynb` notebooks in our `notebooks` folder related to initial modeling experimentation (finetuning BLIP, creating/training our custom model).
 
 ## Project
-We develop an application for Instagram caption generation. A user can upload a post they would like to caption along with a tone (e.g. quirky, funny, serious, happy, etc) for the caption. Our solution includes a robust pipeline with a backend API service and a frontend application implemented with React. Our user-facing application ties in various components from our previous milestones.
+We develop an application for personalized Instagram caption generation based on context from a given photo and a user specified tone. A user can upload a post they would like to caption along with a tone (e.g. quirky, funny, serious, happy, etc) for the caption. Our solution includes a robust pipeline with a backend API service and a frontend application implemented with React. Our user-facing application ties in various components from our previous milestones.
 
 A brief overview of our application is as so:
 1. User uploads an image
