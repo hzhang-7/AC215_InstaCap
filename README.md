@@ -244,6 +244,40 @@ We have integrated CI/CD through Github Actions, enabling us to initiate deploym
 
 Our `ci-cd.yml` file is designed to trigger on specific commit messages and, when triggered, build a Docker image and deploy the application to a Kubernetes cluster using Ansible scripts. The specific conditions and actions are based on commit message patterns like `'/run-'` and `'/run-deploy-app'`.
 
+## [OPTIONAL] Deployment to GCP
+If desired, deploying our application through Ansible on a single VM in GCP is possible. In order to do so, ensure that both the BLIP and LLaMA models are deployed and the respective `.txt` files (located in `secrets/`) containing the endpoints are updated.
+To use the application on a single VM instance in GCP:
+
+**Run the `deployment` container**
+- Run the command `cd src/ansible-deployment` to be in the correct directory
+- Run `sh docker-shell.sh` (or `docker-shell.bat` for Windows)
+- Ensure authentication to GCP by running `gcloud auth list`
+
+**Deploying with Ansible**
+- Build and push Docker containers to GCR:
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
+- Create compute instance (VM) in GCP:
+```
+ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
+```
+After running this command, copy the IP address of the VM and update the `inventory.yml` file located on the very last line.
+- Provision VM in GCP
+```
+ansible-playbook deploy-provision-instance.yml -i inventory.yml
+```
+- Setup Docker containers in the VM
+```
+ansible-playbook deploy-setup-containers.yml -i inventory.yml
+```
+- Setup the webserver on the VM
+```
+ansible-playbook deploy-setup-webserver.yml -i inventory.yml
+```
+- View the application by going to `http://<EXTERNAL IP>`
+
+
 ## Acknowledgements
 Team InstaCap would like to acknowledge our TF, Tale Lokvenec, for his support and guidance throughout the entire semester! Thank you so much, Tale :)
 
