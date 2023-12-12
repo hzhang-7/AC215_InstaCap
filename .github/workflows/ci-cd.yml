@@ -32,19 +32,23 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-      - name: Build API Service Container 
+      name: Build Deployment Container 
         run: |-
-          cd ${{ github.workspace }}/src/api-service/
-          docker build -t instacap-service -f Dockerfile .
-      - name: Build Frontend Container 
-        run: |-
-          cd ${{ github.workspace }}/src/frontend-react/
-          docker build -t instacap-frontend -f Dockerfile .
-      - run: echo "Job's status is ${{ job.status }}."
+          cd ${{ github.workspace }}/src/ansible-deployment/
+          docker build -t instacap-deployment -f Dockerfile .
+      # - name: Build API Service Container 
+      #   run: |-
+      #     cd ${{ github.workspace }}/src/api-service/
+      #     docker build -t instacap-service -f Dockerfile .
+      # - name: Build Frontend Container 
+      #   run: |-
+      #     cd ${{ github.workspace }}/src/frontend-react/
+      #     docker build -t instacap-frontend -f Dockerfile .
+      # - run: echo "Job's status is ${{ job.status }}."
       - name: Run Deploy App
         if: contains(github.event.head_commit.message, '/run-deploy-app')
         run: |-
-          docker run --rm --name ansible-deployment \
+          docker run --rm --name instacap-deployment \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v $HOME/.ssh:/home/app/.ssh \
             -v ${{ github.workspace }}/src/frontend-react:/frontend-react \
@@ -55,7 +59,7 @@ jobs:
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=ac215-project-398320 \
             -e GCP_ZONE=us-central1-a \
-            ansible-deployment sh deploy-app.sh
+            instacap-deployment sh deploy-app.sh
 
           
          
