@@ -11,7 +11,7 @@
 Here is a [video](https://drive.google.com/file/d/1479kNGTI2mwlpMR3DJuUCykCgDIdxccj/view?usp=sharing) where we give a quick presententation going over our project at a high level.
 
 ## Blog Post
-Here is a [Medium post](placeholder_link) describing our project, methods, and challenges in further detail.
+Here is a [Medium post](https://medium.com/institute-for-applied-computational-science/instacap-generating-instagram-captions-fe77bdbe08cb) describing our project, methods, and challenges in further detail.
 
 ## Project Organization
 The current structure of our repo is given below:
