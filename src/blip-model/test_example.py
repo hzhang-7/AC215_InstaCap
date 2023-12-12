@@ -1,3 +1,5 @@
+# script to test if our blip deployment works
+
 # Install required libraries
 # pip install requests
 # pip install google-auth

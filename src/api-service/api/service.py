@@ -94,7 +94,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # Routes
 @app.get("/")
 async def get_index():
@@ -106,7 +105,6 @@ async def generate_caption(
     tone: str = Form(...),
     audience: str = Form(...),
 ):
-    logging.debug("This is a debug message.")
     try:
         tone = tone
         audience = audience
@@ -114,18 +112,14 @@ async def generate_caption(
         
         SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
 
-        # service account JSON file name
-        # SERVICE_ACCOUNT_FILE = '../secrets/model_deployment.json'
+        # service account JSON file:
         SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-        logging.debug(f"service account file {SERVICE_ACCOUNT_FILE}")
 
         # Load credentials from the service account file with the specified SCOPES
         cred = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-        logging.debug("got creds")
 
         # Create an authentication request
         auth_req = google.auth.transport.requests.Request()
-        logging.debug("authed")
 
         # Refresh the credentials
         cred.refresh(auth_req)
@@ -136,64 +130,48 @@ async def generate_caption(
         # GCP project ID
         project_id = "ac215-project-398320"
 
-        # Endpoint ID from the model dashboard
-        #blip_endpoint_id = '6152491036057796608' # changes every time you deploy
-        # blip_endpoint_id = os.getenv("BLIP_ENDPOINT")
+        # Getting our endpoint ID from the model once we deploy BLIP
         with open(os.getenv("BLIP_ENDPOINT")) as file:
             blip_endpoint = file.read()
             blip_endpoint = blip_endpoint.rsplit('/', 1)[-1]
-            logging.debug(f"blip {blip_endpoint}")
 
-        # Define the base URL for your specific region (us-central1 in this example)
+        # defining our BLIP base url with our project id and specific endpoint 
         blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{blip_endpoint}:predict"
-        # blip_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/{blip_endpoint}:predict"
 
-        # defining llama endpoints:
-        # llama_endpoint_id = '1770488598626304000'
-        # llama_endpoint_id = os.getenv("LLAMA_ENDPOINT")
+        # Getting our endpoint ID from the model once we deploy LLaMA
         with open(os.getenv("LLAMA_ENDPOINT")) as file:
             llama_endpoint = file.read()
             llama_endpoint = llama_endpoint.rsplit('/', 1)[-1]
-            logging.debug(f"llama {llama_endpoint}")
 
+        # defining our LLaMA base url with our project id and specific endpoint 
         llama_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/{project_id}/locations/us-central1/endpoints/{llama_endpoint}:predict"
-        # llama_base_url = f"https://us-central1-aiplatform.googleapis.com/v1beta1/{llama_endpoint}:predict"
         if processed_image is None:
             print(f"Error processing image")
         else:
             print("Image processed successfully! Sending to BLIP...")
             blip_transcription = prompt_blip(processed_image, bearer_token, blip_base_url)
-            logging.debug(f"got blip trans {blip_transcription}")
 
             print(f'BLIP caption: {blip_transcription}')
-            # get llama caption:
+            # prompting llama here:
             if audience == 'personal':
                 prompt = f'Q: What is a {tone} Instagram caption of {blip_transcription} that is for my personal audience. Please only give the caption with no other extraneous characters. A: '
             elif audience == 'promotional':
                 prompt = f'Q: What is a {tone} Instagram caption of {blip_transcription} that is for a promotional audience. The caption should be written in an advertising style trying to sell something. Please only give the caption with no other extraneous characters. A: '
             elif audience == 'academic':
                 prompt = f'Q: What is a {tone} Instagram caption of {blip_transcription} that is for an academic audience. The caption should be written in a professional academic way. Please only give the caption with no other extraneous characters. A: '
+            
+            # sending our prompt to llama to get our caption...
             llama_response = prompt_llama(prompt=prompt, bearer_token=bearer_token, llama_base_url=llama_base_url)
-            logging.debug("slay")
-            # try:
-            #     # fixing formatting issues in raw llama response to get caption
-            #     llama_answers = re.findall(r'A: "(.*?)"', llama_response[0])
-            #     caption = llama_answers[0]
-            # except:
-            #     caption = llama_response[0]
             caption = llama_response[0].split("A: ")[1]
             print(f'Llama IG caption: {caption}')
-
         return {"caption": caption}
     except Exception as e:
-        logging.debug(f"we messed up {e}")
         # If there's a validation error, capture and return the details
-        print(image)
+        # print(image)
         return e.detail
     
 @app.get("/status")
 async def get_api_status():
     return {
         "version": "2.2",
-        # "tf_version": tf.__version__,
     }

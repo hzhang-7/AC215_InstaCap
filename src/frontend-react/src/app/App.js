@@ -71,24 +71,6 @@ const App = () => {
       });
   };
 
-  // function for copying caption
-  // const handleCopyClick = () => {
-  //   if (generatedCaption) {
-  //     navigator.clipboard.writeText(generatedCaption)
-  //       .then(() => {
-  //         console.log('Caption copied to clipboard');
-  //         setButtonText('Copied!');
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error copying to clipboard:', error);
-  //       });
-  //   } else {
-  //     console.error('No generated caption to copy.');
-  //   }
-  // };
-
-
-
   // Build App
   let view = (
     <React.Fragment>
@@ -119,9 +101,6 @@ const App = () => {
                 >
                   Generated Caption:<br /> {generatedCaption}
                 </p>
-                {/* <Button onClick={handleCopyClick} variant="contained" color="primary" style={{ marginTop: '10px' }}>
-                  {buttonText}
-                </Button> */}
               </div>
             )}
           </Content>
