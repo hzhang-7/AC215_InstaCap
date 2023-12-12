@@ -8,14 +8,10 @@
 - Mike Binkowski (mbinkowski@college.harvard.edu)
 
 ## Presentation Video
-[Here](https://drive.google.com/file/d/1479kNGTI2mwlpMR3DJuUCykCgDIdxccj/view?usp=sharing) is a video where we present our project.
+Here is a [video](https://drive.google.com/file/d/1479kNGTI2mwlpMR3DJuUCykCgDIdxccj/view?usp=sharing) where we give a quick presententation going over our project at a high level.
 
 ## Blog Post
-[Here](placeholder_link) is a Medium post describing our project and methods in detail.
-
-## Application Design Document
-
-Here is a link to our [Application Design Document](https://docs.google.com/document/d/1nfIAfQsc5jb_c3mEyVgnvpwIUKysTz3JKVl3y6ujsDg/edit?usp=sharing)
+Here is a [Medium post](placeholder_link) describing our project, methods, and challenges in further detail.
 
 ## Project Organization
 The current structure of our repo is given below:
@@ -161,8 +157,12 @@ The current structure of our repo is given below:
 --------
 **Note**: The `persistant-folder` and `secrets` are folders that are in the local directory (not pushed to GitHub). The `notebooks` folder contains code that is not part of any containers (e.g. EDA, reports, etc) and the `references` folder contains references. Currently, we have two `.ipynb` notebooks in our `notebooks` folder related to initial modeling experimentation (finetuning BLIP, creating/training our custom model).
 
+## Application Design Document
+
+Here is a link to our [Application Design Document](https://docs.google.com/document/d/1nfIAfQsc5jb_c3mEyVgnvpwIUKysTz3JKVl3y6ujsDg/edit?usp=sharing).
+
 ## Project
-We develop an application for personalized Instagram caption generation based on context from a given photo and a user specified tone. A user can upload a post they would like to caption along with a tone (e.g. quirky, funny, serious, happy, etc) for the caption. Our solution includes a robust pipeline with a backend API service and a frontend application implemented with React. Our user-facing application ties in various components from our previous milestones.
+We develop an application for personalized Instagram caption generation based on context from a given photo and a user specified tone. A user can upload a photo they would like to caption along with a tone (e.g. quirky, funny, serious, happy, etc) for a unique relevant caption to use for their Instagram post. Our solution includes a robust pipeline with a backend API service and a frontend application implemented with React. Our user-facing application ties in various components from our previous milestones.
 
 A brief overview of our application is as so:
 1. User uploads an image
@@ -180,11 +180,17 @@ We can see our deployed application on a Kubernetes cluster in GCP here:
 ![Cluster](references/kubernetes_cluster.png)
 
 ### Deploying BLIP and LLaMA
-Before deploying our models, we deploy our BLIP and LLaMA (In practice, these models should always be deployed--we undeploy our models due to compute costs/our limited resources) models.
+Before deploying our application, we deploy our BLIP and LLaMA models to the Vertex AI Model Registry.
+
+**NOTE**:
+- Our LLaMA model is a quantized version of LLaMA-2-13B
+- In practice (production), these models should remain deployed (no need for deploying the models every time someone would like to use the app). Due to compute costs and limited resources, we have undeployed our models after completing our project.
+
+Here are instructions to deploy BLIP and LLaMA to Vertex AI:
 
 - Run the command `cd src/ansible-deployment` to be in the correct directory
 - Run `sh docker-shell.sh`
-- Deploy BLIP and LLaMA
+- Deploy BLIP and LLaMA with Ansible
 ```
 ansible-playbook blip.yml llama.yml
 ```
@@ -208,14 +214,14 @@ To run this container locally:
 - Inside the container, run `yarn start`
 - Visit `http://localhost:3000` to view the application
 
-### Deployment
+### Deployment!
 We utilize GCP (Google Cloud Platform) to deploy our containers and all images are uploaded in GCR (Google Cloud Registry).
 
 To run the container locally:
 
 - Run the command `cd src/ansible-deployment` to be in the correct directory
 - Run `sh docker-shell.sh`
-- Build and push the Docker containers to GCR by running
+- Build and push the Docker containers to GCR by running (only need to do once)
 ```
 ansible-playbook deploy-docker-images.yml -i inventory.yml
 ```
