@@ -171,7 +171,7 @@ A brief overview of our application is as so:
 4. Send image to BLIP to get a description of the uploaded image
 5. Get Instagram-like captions from LLaMA through prompt engineering based off the BLIP description and specified tone
 
-Here is a quick demo of our app:
+Click to view a quick demo of our app:
 [![Watch the video](references/demo_k8s_preview.png)](https://youtu.be/jJPwnn9T_Ig)
 
 
