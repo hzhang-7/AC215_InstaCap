@@ -171,7 +171,9 @@ A brief overview of our application is as so:
 4. Send image to BLIP to get a description of the uploaded image
 5. Get Instagram-like captions from LLaMA through prompt engineering based off the BLIP description and specified tone
 
-[INSERT GIF HERE]
+Here is a quick demo of our app:
+[![Watch the video](references/demo_k8s_preview.png)](https://youtu.be/jJPwnn9T_Ig)
+
 
 ## Kubernetes Deployment
 We've implemented a deployment strategy for our frontend and backend on a Kubernetes cluster to handle load balancing and failover seamlessly. Our approach involves utilizing Ansible scripts to orchestrate the creation and updating of the Kubernetes cluster. Leveraging Ansible enables us to treat our infrastructure as code, allowing us to efficiently track and manage our application's infrastructure within GitHub. This approach greatly streamlines the process of setting up automated deployments for our application.
